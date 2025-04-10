@@ -64,8 +64,6 @@ namespace ConcessionariaWeb.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            // Log de entrada no método
-            _logger.LogInformation("Iniciando login para o email: {Email}", model.Email);
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user != null)
@@ -90,27 +88,24 @@ namespace ConcessionariaWeb.Controllers
                     new Claim("nome", user.Nome ?? user.Email ?? string.Empty)
                 };
 
-                // Log dos claims adicionados
-                _logger.LogDebug("Claims adicionados ao token: {Claims}", 
-                    string.Join(", ", authClaims.Select(c => $"{c.Type}: {c.Value}")));
+
 
                 var secretKey = _configuration["JwtSettings:SecretKey"];
                 if (string.IsNullOrEmpty(secretKey))
                 {
-                    _logger.LogError("SecretKey não está configurada no appsettings.json ou variável de ambiente.");
                     throw new InvalidOperationException("SecretKey is not configured.");
                 }
-                _logger.LogDebug("SecretKey carregada com sucesso.");
 
                 var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
                 var token = new JwtSecurityToken(
+                    issuer: _configuration["JwtSettings:Issuer"] ?? "ConcessionariaWeb",
+                    audience: _configuration["JwtSettings:Audience"] ?? "ConcessionariaWeb",
                     expires: DateTime.Now.AddHours(1),
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
                 );
 
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-                _logger.LogInformation("Token gerado com sucesso. Expiração: {Expiration}", token.ValidTo);
 
                 var response = new
                 {

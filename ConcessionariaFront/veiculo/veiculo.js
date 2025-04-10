@@ -397,16 +397,38 @@ function editarVeiculo(id) {
 async function excluirVeiculo(id) {
   if (confirm("Tem certeza que deseja excluir este veículo?")) {
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Sessão expirada. Faça login novamente.");
+        localStorage.removeItem("token");
+        localStorage.removeItem("nome");
+        localStorage.removeItem("tipo");
+        window.location.href = "/login.html";
+        return;
+      }
+
+
       const resposta = await fetch(`${apiUrlVeiculo}/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
+
       if (!resposta.ok) {
+        if (resposta.status === 401) {
+          alert("Sessão expirada ou permissão negada. Faça login novamente.");
+          localStorage.removeItem("token");
+          localStorage.removeItem("nome");
+          localStorage.removeItem("tipo");
+          window.location.href = "/login.html";
+          return;
+        }
         const erro = await resposta.text();
         throw new Error(`Erro na API: ${resposta.status} - ${erro}`);
       }
+
       const tabelaVeiculos = document.getElementById("tabelaVeiculos");
       if (tabelaVeiculos) {
         tabelaVeiculos.innerHTML = `

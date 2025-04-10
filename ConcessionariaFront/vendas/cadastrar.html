@@ -73,6 +73,7 @@
         <div class="col-md-8">
           <div class="card-no-hover p-4">
             <h2 class="text-center mb-4">Cadastrar Venda</h2>
+            <div id="geralError" style="display: none; color: red;" class="mb-3"></div>
             <form id="formCadastroVenda">
               <div class="row">
                 <div class="col-md-6 mb-3">
@@ -119,6 +120,7 @@
                     placeholder="000.000.000-00"
                     required
                   />
+                  <div id="cpfError" style="display: none; color: red;"></div>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label for="telefone" class="form-label">Telefone</label>
@@ -142,6 +144,7 @@
                     id="dataVenda"
                     required
                   />
+                  <div id="dataVendaError" style="display: none; color: red;"></div>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label for="precoVenda" class="form-label"
@@ -154,6 +157,7 @@
                     id="precoVenda"
                     required
                   />
+                  <div id="precoVendaError" style="display: none; color: red;"></div>
                 </div>
               </div>
               <div class="d-flex justify-content-between">

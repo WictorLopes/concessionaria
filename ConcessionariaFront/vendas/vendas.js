@@ -171,7 +171,6 @@ document.addEventListener("DOMContentLoaded", function () {
         protocolo: "",
       };
 
-      console.log("aqio", novaVenda);
       try {
         const resposta = await fetch(apiUrlVenda, {
           method: "POST",
@@ -184,19 +183,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (resposta.ok) {
           const result = await resposta.json();
-          exibirErro(
+          // Tentar exibir a mensagem de sucesso
+          const mensagemExibida = exibirErro(
+            "geral",
             `Venda cadastrada com sucesso! Protocolo: ${result.protocolo}`
           );
-          window.location.href = "listar.html";
+          setTimeout(() => {
+            window.location.href = "listar.html";
+          }, mensagemExibida ? 1500 : 0); 
         } else if (resposta.status === 409) {
-          exibirErro("CPF já registrado para outra venda!");
+          exibirErro("cpf", "CPF já registrado para outra venda!");
         } else {
           const erro = await resposta.text();
           throw new Error(`Erro na API: ${resposta.status} - ${erro}`);
         }
       } catch (error) {
         console.error("Erro ao cadastrar venda:", error);
-        exibirErro("Erro ao cadastrar venda: " + error.message);
+        exibirErro("geral", "Erro ao cadastrar venda: " + error.message);
       }
     });
 

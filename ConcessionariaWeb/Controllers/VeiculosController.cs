@@ -1,5 +1,6 @@
 using ConcessionariaWeb.Data;
 using ConcessionariaWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -121,15 +122,51 @@ namespace ConcessionariaWeb.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> DeleteVeiculo(int id)
         {
-            var veiculo = await _context.Veiculos.FindAsync(id);
-            if (veiculo == null) return NotFound();
+            try
+            {
+                var veiculo = await _context.Veiculos.FindAsync(id);
+                if (veiculo == null)
+                {
+                    return NotFound(new {
+                        message = "Veículo não encontrado."
+                    });
+                }
 
-            _context.Veiculos.Remove (veiculo);
-            await _context.SaveChangesAsync();
+                // Encontrar todas as vendas associadas ao veículo
+                var vendasAssociadas =
+                    await _context
+                        .Vendas
+                        .Where(v => v.VeiculoId == id)
+                        .ToListAsync();
 
-            return NoContent();
+                // Definir VeiculoId como NULL nas vendas associadas
+                foreach (var venda in vendasAssociadas)
+                {
+                    venda.VeiculoId = null;
+                }
+
+                // Salvar as alterações nas vendas
+                await _context.SaveChangesAsync();
+
+                // Agora é seguro excluir o veículo
+                _context.Veiculos.Remove (veiculo);
+                await _context.SaveChangesAsync();
+
+                return Ok(new {
+                    message =
+                        "Veículo excluído com sucesso. As vendas associadas foram mantidas."
+                });
+            }
+            catch (Exception ex)
+            {
+                // Logar o erro para depuração
+                Console.WriteLine($"Erro ao excluir veículo: {ex.Message}");
+                return StatusCode(500,
+                new { message = "Erro interno ao excluir veículo." });
+            }
         }
 
         [HttpGet("por-fabricante/{fabricanteId}")]

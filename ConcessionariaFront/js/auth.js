@@ -31,50 +31,51 @@ function verificarAutenticacao() {
     return token;
 }
 
-// Função de login
+// Função de login (apenas na página login.html)
 document.addEventListener("DOMContentLoaded", function () {
-    const formLogin = document.getElementById("formLogin");
-    if (formLogin) {
-        formLogin.addEventListener("submit", async function (event) {
-            event.preventDefault();
+    // Verificar se estamos na página de login
+    if (window.location.pathname.endsWith("login.html")) {
+        const formLogin = document.getElementById("formLogin");
+        if (formLogin) {
+            formLogin.addEventListener("submit", async function (event) {
+                event.preventDefault();
 
-            const email = document.getElementById("email").value.trim();
-            const senha = document.getElementById("senha").value.trim();
+                const email = document.getElementById("email").value.trim();
+                const senha = document.getElementById("senha").value.trim();
 
+                const loginData = { email, senha };
 
-            const loginData = { email, senha };
+                try {
+                    const resposta = await fetch(`${apiUrlAuth}/login`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(loginData),
+                    });
 
-            try {
-                const resposta = await fetch(`${apiUrlAuth}/login`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(loginData),
-                });
+                    if (!resposta.ok) {
+                        const erro = await resposta.json();
+                        console.error("Erro na requisição de login:", erro);
+                        throw new Error(erro.message || "Credenciais inválidas.");
+                    }
 
+                    const data = await resposta.json();
 
-                if (!resposta.ok) {
-                    const erro = await resposta.json();
-                    console.error("Erro na requisição de login:", erro);
-                    throw new Error(erro.message || "Credenciais inválidas.");
+                    // Armazenar o token, nome e tipo diretamente da resposta da API
+                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("nome", data.nome || "Usuário");
+                    localStorage.setItem("tipo", data.tipo || "Desconhecido");
+                    window.location.href = "/";
+                } catch (error) {
+                    console.error("Erro ao fazer login:", error.message);
+                    const errorDiv = document.getElementById("emailError");
+                    if (errorDiv) {
+                        errorDiv.textContent = error.message;
+                        errorDiv.style.display = "block";
+                    }
                 }
-
-                const data = await resposta.json();
-
-                // Armazenar o token, nome e tipo diretamente da resposta da API
-                localStorage.setItem("token", data.token);
-                localStorage.setItem("nome", data.nome || "Usuário");
-                localStorage.setItem("tipo", data.tipo || "Desconhecido");
-                window.location.href = "/";
-            } catch (error) {
-                console.error("Erro ao fazer login:", error.message);
-                const errorDiv = document.getElementById("emailError");
-                if (errorDiv) {
-                    errorDiv.textContent = error.message;
-                    errorDiv.style.display = "block";
-                }
-            }
-        });
-    } else {
-        console.log("Formulário de login (formLogin) não encontrado na página.");
+            });
+        } else {
+            console.log("Formulário de login (formLogin) não encontrado na página de login.");
+        }
     }
 });

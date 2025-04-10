@@ -1,7 +1,11 @@
-const apiUrlConcessionaria = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/concessionarias";
-const apiUrlFabricante = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/fabricantes";
-const apiUrlVeiculo = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/veiculos";
-const apiUrlVenda = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/venda";
+const apiUrlConcessionaria =
+  "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/concessionarias";
+const apiUrlFabricante =
+  "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/fabricantes";
+const apiUrlVeiculo =
+  "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/veiculos";
+const apiUrlVenda =
+  "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/venda";
 
 document.addEventListener("DOMContentLoaded", function () {
   const formCadastroVenda = document.getElementById("formCadastroVenda");
@@ -16,6 +20,13 @@ document.addEventListener("DOMContentLoaded", function () {
   function formatarTelefone(telefone) {
     const value = telefone.replace(/\D/g, "");
     return value.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+  }
+
+  // Função para exibir mensagem de erro
+  function exibirErro(campo, mensagem) {
+    const errorDiv = document.getElementById(`${campo}Error`);
+    errorDiv.textContent = mensagem;
+    errorDiv.style.display = "block";
   }
 
   // Funções para cadastro
@@ -84,13 +95,19 @@ document.addEventListener("DOMContentLoaded", function () {
     fabricanteSelect.addEventListener("change", async function () {
       const fabricanteId = parseInt(this.value);
       veiculoSelect.disabled = true;
-      veiculoSelect.innerHTML = '<option value="">Selecione um veículo</option>';
+      veiculoSelect.innerHTML =
+        '<option value="">Selecione um veículo</option>';
 
       if (fabricanteId) {
         try {
-          const resposta = await fetch(`${apiUrlVeiculo}/por-fabricante/${fabricanteId}`, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-          });
+          const resposta = await fetch(
+            `${apiUrlVeiculo}/por-fabricante/${fabricanteId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
           if (!resposta.ok) throw new Error("Erro ao carregar veículos");
           const veiculos = await resposta.json();
           veiculos.forEach((veiculo) => {
@@ -118,8 +135,12 @@ document.addEventListener("DOMContentLoaded", function () {
       const cpf = cpfInput.value.replace(/\D/g, "");
       const telefone = telefoneInput.value.replace(/\D/g, "");
       const dataVenda = document.getElementById("dataVenda").value;
-      const precoVenda = parseFloat(document.getElementById("precoVenda").value);
-      const precoVeiculo = parseFloat(veiculoSelect.selectedOptions[0].dataset.preco);
+      const precoVenda = parseFloat(
+        document.getElementById("precoVenda").value
+      );
+      const precoVeiculo = parseFloat(
+        veiculoSelect.selectedOptions[0].dataset.preco
+      );
 
       const hoje = new Date().toISOString().split("T")[0];
 
@@ -132,24 +153,25 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
       if (precoVenda > precoVeiculo) {
-        exibirErro("O preço de venda não pode ser maior que o preço do veículo!");
+        exibirErro(
+          "O preço de venda não pode ser maior que o preço do veículo!"
+        );
         return;
       }
 
-      
       const novaVenda = {
-          concessionariaId,
-          veiculoId,
-          fabricanteId,
-          nomeCliente,
-          cpf,
-          telefone,
-          dataVenda,
-          precoVenda,
-          protocolo: "",
-        };
-        
-        console.log('aqio', novaVenda)
+        concessionariaId,
+        veiculoId,
+        fabricanteId,
+        nomeCliente,
+        cpf,
+        telefone,
+        dataVenda,
+        precoVenda,
+        protocolo: "",
+      };
+
+      console.log("aqio", novaVenda);
       try {
         const resposta = await fetch(apiUrlVenda, {
           method: "POST",
@@ -162,7 +184,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (resposta.ok) {
           const result = await resposta.json();
-          exibirErro(`Venda cadastrada com sucesso! Protocolo: ${result.protocolo}`);
+          exibirErro(
+            `Venda cadastrada com sucesso! Protocolo: ${result.protocolo}`
+          );
           window.location.href = "listar.html";
         } else if (resposta.status === 409) {
           exibirErro("CPF já registrado para outra venda!");
@@ -181,10 +205,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function formatarPreco(valor) {
-    return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    return valor.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
   }
 
-  
   // Função para listagem
   if (tabelaVendas) {
     async function carregarVendas() {

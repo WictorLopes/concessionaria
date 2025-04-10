@@ -41,6 +41,7 @@ namespace ConcessionariaWeb.Data
                 .HasOne(v => v.Veiculo)
                 .WithMany() // Veiculo não tem uma coleção de Vendas (opcional)
                 .HasForeignKey(v => v.VeiculoId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict); // Impede exclusão em cascata
 
             // Relação: Veiculo -> Fabricante

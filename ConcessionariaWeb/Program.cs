@@ -25,15 +25,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-var baseConnectionString = builder.Configuration.GetConnectionString("DefaultConnectionBase");
-var dbPassword = builder.Configuration["DatabaseSettings:Password"];
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? $"{builder.Configuration.GetConnectionString("DefaultConnectionBase")}Password={builder.Configuration["DatabaseSettings:Password"]};";
 
-// Adicionar a senha na string
-var completeConnectionString = $"{baseConnectionString}Password={dbPassword};";
-
-// Configurar o DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(completeConnectionString));
+    options.UseSqlServer(connectionString));
 
 // Configurar Identity
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)

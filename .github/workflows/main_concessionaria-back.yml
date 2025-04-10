@@ -13,11 +13,10 @@ jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read # Required for actions/checkout
+      contents: read # This is required for actions/checkout
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
@@ -26,18 +25,21 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
+        working-directory: ./ConcessionariaWeb
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --configuration Release
+        working-directory: ./ConcessionariaWeb
 
       - name: Publish app
-        run: dotnet publish -c Release -o published
+        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        working-directory: ./ConcessionariaWeb
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: published-app
-          path: published
+          name: .net-app
+          path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
     runs-on: windows-latest
@@ -46,15 +48,15 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write # Required for requesting the JWT
-      contents: read # Required for actions/checkout
+      id-token: write # This is required for requesting the JWT
+      contents: read  # This is required for actions/checkout
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: published-app
-
+          name: .net-app
+      
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -68,4 +70,4 @@ jobs:
         with:
           app-name: 'concessionaria-back'
           slot-name: 'Production'
-          package: published
+          package: .

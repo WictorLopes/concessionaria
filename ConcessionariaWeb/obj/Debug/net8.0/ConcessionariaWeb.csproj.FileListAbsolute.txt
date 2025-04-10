@@ -169,3 +169,4 @@ C:\Users\wicto\OneDrive\Documents\concessionaria\ConcessionariaWeb\obj\Debug\net
 C:\Users\wicto\OneDrive\Documents\concessionaria\ConcessionariaWeb\obj\Debug\net8.0\ConcessionariaWeb.pdb
 C:\Users\wicto\OneDrive\Documents\concessionaria\ConcessionariaWeb\obj\Debug\net8.0\ConcessionariaWeb.genruntimeconfig.cache
 C:\Users\wicto\OneDrive\Documents\concessionaria\ConcessionariaWeb\obj\Debug\net8.0\ref\ConcessionariaWeb.dll
+C:\Users\wicto\OneDrive\Documents\concessionaria\ConcessionariaWeb\bin\Debug\net8.0\web.config

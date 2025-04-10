@@ -24,9 +24,16 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+var baseConnectionString = builder.Configuration.GetConnectionString("DefaultConnectionBase");
+var dbPassword = builder.Configuration["DatabaseSettings:Password"];
+
+// Adicionar a senha na string
+var completeConnectionString = $"{baseConnectionString}Password={dbPassword};";
+
 // Configurar o DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(completeConnectionString));
 
 // Configurar Identity
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
@@ -48,8 +55,11 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false,
-        ValidateAudience = false
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+
     };
 });
 

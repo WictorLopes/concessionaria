@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Concessionária Web - Cadastrar Usuário</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container">
+        <a class="navbar-brand" href="../index.html">Concessionária Web</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="../index.html">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../vendas/listar.html">Vendas</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../concessionaria/listar.html"
+                >Concessionárias</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../fabricante/listar.html"
+                >Fabricantes</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../veiculo/listar.html">Veículos</a>
+            </li>
+            <div id="listar-usuarios-container" style="display: flex">
+              <li class="nav-item">
+                <a class="nav-link" href="usuario/listar.html">Usuários</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="relatorios/listar.html">Relatórios</a>
+              </li>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Cadastro de Usuário -->
+    <main class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card-no-hover p-4">
+            <h2 class="text-center mb-4">Cadastrar Usuário</h2>
+            <form id="formCadastrarUsuario">
+              <div class="mb-3">
+                <label for="nome" class="form-label">Nome</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="nome"
+                  placeholder="Nome completo"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="telefone" class="form-label">Telefone</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="telefone"
+                  placeholder="(XX) XXXXX-XXXX"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">E-mail</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  placeholder="exemplo@dominio.com"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="senha" class="form-label">Senha</label>
+                <div class="input-group">
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="senha"
+                    required
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    id="toggleSenha"
+                  >
+                    <span class="bi bi-eye" id="iconeOlho"></span>
+                  </button>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="tipo" class="form-label">Tipo</label>
+                <select class="form-select" id="tipo" required>
+                  <!-- Opções preenchidas dinamicamente pelo JavaScript -->
+                </select>
+              </div>
+              <div class="d-flex justify-content-between">
+                <a
+                  href="listar.html"
+                  class="btn btn-secondary w-100"
+                  style="margin-right: 10px"
+                  >Voltar</a
+                >
+
+                <button type="submit" class="btn btn-success w-100 me-2">
+                  Cadastrar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center">
+      <p>© 2025 Concessionária Web. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+      // Verificar autenticação
+      verificarAutenticacao();
+
+      // Configurar opções de tipo com base no usuário logado
+      const tipoUsuarioLogado = localStorage.getItem("tipo");
+      const selectTipo = document.getElementById("tipo");
+
+      if (tipoUsuarioLogado === "Administrador") {
+        selectTipo.innerHTML = `
+                <option value="Administrador">Administrador</option>
+                <option value="Gerente">Gerente</option>
+                <option value="Vendedor">Vendedor</option>
+            `;
+      } else if (tipoUsuarioLogado === "Gerente") {
+        selectTipo.innerHTML = `
+                <option value="Gerente">Gerente</option>
+                <option value="Vendedor">Vendedor</option>
+            `;
+      } else {
+        window.location.href = "../login.html";
+      }
+
+      // Alternar visibilidade da senha
+      const toggleSenha = document.getElementById("toggleSenha");
+      const senhaInput = document.getElementById("senha");
+      const iconeOlho = document.getElementById("iconeOlho");
+
+      toggleSenha.addEventListener("click", function () {
+        if (senhaInput.type === "password") {
+          senhaInput.type = "text";
+          iconeOlho.classList.remove("bi-eye");
+          iconeOlho.classList.add("bi-eye-slash");
+        } else {
+          senhaInput.type = "password";
+          iconeOlho.classList.remove("bi-eye-slash");
+          iconeOlho.classList.add("bi-eye");
+        }
+      });
+
+      // Função para formatar telefone
+      function formatarTelefone(telefone) {
+        telefone = telefone.replace(/\D/g, "");
+        if (telefone.length <= 10) {
+          return telefone
+            .replace(/(\d{2})(\d{0,4})(\d{0,4})/, "($1) $2-$3")
+            .trim();
+        } else {
+          return telefone
+            .replace(/(\d{2})(\d{0,5})(\d{0,4})/, "($1) $2-$3")
+            .trim();
+        }
+      }
+
+      // Aplicar formatação ao telefone em tempo real
+      const telefoneInput = document.getElementById("telefone");
+      telefoneInput.addEventListener("input", function () {
+        this.value = formatarTelefone(this.value);
+      });
+
+      // Enviar formulário
+      document
+        .getElementById("formCadastrarUsuario")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const nome = document.getElementById("nome").value.trim();
+          const telefone = document.getElementById("telefone").value.trim();
+          const email = document.getElementById("email").value.trim();
+          const senha = document.getElementById("senha").value.trim();
+          const tipo = document.getElementById("tipo").value;
+
+          const usuarioData = {
+            nome: nome,
+            telefone: telefone,
+            email: email,
+            senha: senha,
+            tipo: tipo,
+          };
+
+          try {
+            const resposta = await fetch(`${apiUrlAuth}/register`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${verificarAutenticacao()}`,
+              },
+              body: JSON.stringify(usuarioData),
+            });
+
+            if (!resposta.ok) {
+              const erro = await resposta.json();
+              throw new Error(
+                erro.errors ? erro.errors.join(", ") : "Erro ao cadastrar."
+              );
+            }
+
+            const data = await resposta.json();
+            alert(data.message);
+            window.location.href = "../index.html";
+          } catch (error) {
+            console.error("Erro ao cadastrar usuário:", error);
+            alert(error.message);
+          }
+        });
+    </script>
+  </body>
+</html>

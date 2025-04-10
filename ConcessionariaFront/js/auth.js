@@ -1,4 +1,4 @@
-const apiUrlAuth = "http://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/auth";
+const apiUrlAuth = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/auth";
 
 // Função para decodificar o token JWT
 function decodeJWT(token) {

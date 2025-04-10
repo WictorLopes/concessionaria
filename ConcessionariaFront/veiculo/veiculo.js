@@ -1,5 +1,5 @@
-const apiUrlVeiculo = "http://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/veiculos";
-const apiUrlFabricante = "http://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/fabricantes";
+const apiUrlVeiculo = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/veiculos";
+const apiUrlFabricante = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/fabricantes";
 
 // Aguarda o DOM estar carregado
 document.addEventListener("DOMContentLoaded", function () {

@@ -1,7 +1,7 @@
-const apiUrlConcessionaria = "http://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/concessionarias";
-const apiUrlFabricante = "http://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/fabricantes";
-const apiUrlVeiculo = "http://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/veiculos";
-const apiUrlVenda = "http://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/venda";
+const apiUrlConcessionaria = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/concessionarias";
+const apiUrlFabricante = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/fabricantes";
+const apiUrlVeiculo = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/veiculos";
+const apiUrlVenda = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/venda";
 
 document.addEventListener("DOMContentLoaded", function () {
   const formCadastroVenda = document.getElementById("formCadastroVenda");

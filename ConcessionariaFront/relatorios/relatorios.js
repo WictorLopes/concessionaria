@@ -1,5 +1,5 @@
-const apiUrlRelatoriosVendasMensais = "http://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/relatorios/vendas-mensais";
-const apiUrlDashboardVendas = "http://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/relatorios/dashboard-vendas";
+const apiUrlRelatoriosVendasMensais = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/relatorios/vendas-mensais";
+const apiUrlDashboardVendas = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/relatorios/dashboard-vendas";
 
 document.addEventListener("DOMContentLoaded", function () {
   // Verificar autenticação

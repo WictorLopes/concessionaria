@@ -34,8 +34,8 @@ namespace ConcessionariaWeb.Controllers
                         .Where(v =>
                             v.DataVenda.Year == ano && v.DataVenda.Month == mes)
                         .Include(v => v.Veiculo)
+                        .ThenInclude(veiculo => veiculo.Fabricante)
                         .Include(v => v.Concessionaria)
-                        .Include(v => v.Fabricante)
                         .GroupBy(v =>
                             new {
                                 TipoVeiculo =
@@ -47,8 +47,9 @@ namespace ConcessionariaWeb.Controllers
                                         ? v.Concessionaria.Nome
                                         : "Desconhecida",
                                 FabricanteNome =
-                                    v.Fabricante != null
-                                        ? v.Fabricante.Nome
+                                    v.Veiculo != null &&
+                                    v.Veiculo.Fabricante != null
+                                        ? v.Veiculo.Fabricante.Nome
                                         : "Desconhecido"
                             })
                         .Select(g =>

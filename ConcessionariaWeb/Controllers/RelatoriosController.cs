@@ -23,7 +23,7 @@ namespace ConcessionariaWeb.Controllers
 
         [HttpGet("vendas-mensais")]
         [Authorize(Roles = "Administrador,Gerente")]
-        public async Task<ActionResult<IEnumerable<object>>>
+        public async Task<ActionResult<IEnumerable<RelatorioVendaMensal>>>
         GetVendasMensais(int ano, int mes)
         {
             try
@@ -52,7 +52,7 @@ namespace ConcessionariaWeb.Controllers
                                         : "Desconhecido"
                             })
                         .Select(g =>
-                            new {
+                            new RelatorioVendaMensal {
                                 TipoVeiculo = g.Key.TipoVeiculo,
                                 Concessionaria = g.Key.ConcessionariaNome,
                                 Fabricante = g.Key.FabricanteNome,

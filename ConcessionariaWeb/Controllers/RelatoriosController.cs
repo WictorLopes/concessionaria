@@ -26,40 +26,51 @@ namespace ConcessionariaWeb.Controllers
         public async Task<ActionResult<IEnumerable<object>>>
         GetVendasMensais(int ano, int mes)
         {
-            var vendas =
-                await _context
-                    .Vendas
-                    .Where(v =>
-                        v.DataVenda.Year == ano && v.DataVenda.Month == mes)
-                    .Include(v => v.Veiculo)
-                    .Include(v => v.Concessionaria)
-                    .Include(v => v.Fabricante)
-                    .GroupBy(v =>
-                        new {
-                            TipoVeiculo =
-                                v.Veiculo != null
-                                    ? v.Veiculo.TipoVeiculo.ToString()
-                                    : "Desconhecido",
-                            ConcessionariaNome =
-                                v.Concessionaria != null
-                                    ? v.Concessionaria.Nome
-                                    : "Desconhecida",
-                            FabricanteNome =
-                                v.Fabricante != null
-                                    ? v.Fabricante.Nome
-                                    : "Desconhecido"
-                        })
-                    .Select(g =>
-                        new {
-                            TipoVeiculo = g.Key.TipoVeiculo,
-                            Concessionaria = g.Key.ConcessionariaNome,
-                            Fabricante = g.Key.FabricanteNome,
-                            ValorTotal = g.Sum(v => v.PrecoVenda),
-                            QuantidadeVendas = g.Count()
-                        })
-                    .ToListAsync();
+            try
+            {
+                var vendas =
+                    await _context
+                        .Vendas
+                        .Where(v =>
+                            v.DataVenda.Year == ano && v.DataVenda.Month == mes)
+                        .Include(v => v.Veiculo)
+                        .Include(v => v.Concessionaria)
+                        .Include(v => v.Fabricante)
+                        .GroupBy(v =>
+                            new {
+                                TipoVeiculo =
+                                    v.Veiculo != null
+                                        ? v.Veiculo.TipoVeiculo.ToString()
+                                        : "Desconhecido",
+                                ConcessionariaNome =
+                                    v.Concessionaria != null
+                                        ? v.Concessionaria.Nome
+                                        : "Desconhecida",
+                                FabricanteNome =
+                                    v.Fabricante != null
+                                        ? v.Fabricante.Nome
+                                        : "Desconhecido"
+                            })
+                        .Select(g =>
+                            new {
+                                TipoVeiculo = g.Key.TipoVeiculo,
+                                Concessionaria = g.Key.ConcessionariaNome,
+                                Fabricante = g.Key.FabricanteNome,
+                                ValorTotal = g.Sum(v => v.PrecoVenda),
+                                QuantidadeVendas = g.Count()
+                            })
+                        .ToListAsync();
 
-            return Ok(vendas);
+                return Ok(vendas);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,
+                new {
+                    Message = "Erro interno ao processar vendas mensais.",
+                    Detalhes = ex.Message
+                });
+            }
         }
 
         [HttpGet("dashboard-vendas")]
@@ -77,45 +88,78 @@ namespace ConcessionariaWeb.Controllers
                         .Include(v => v.Fabricante)
                         .ToListAsync();
 
-                var vendasPorTipo =
-                    vendas
-                        .GroupBy(v =>
-                            v.Veiculo != null ? v.Veiculo.TipoVeiculo.ToString() : "Desconhecido")
-                        .Select(g =>
-                            new {
-                                TipoVeiculo = g.Key,
-                                ValorTotal = g.Sum(v => v.PrecoVenda),
-                                QuantidadeVendas = g.Count()
-                            })
-                        .ToList();
+                if (vendas == null || !vendas.Any())
+                {
+                    return Ok(new {
+                        VendasPorTipo = new List<object>(),
+                        VendasPorConcessionaria = new List<object>(),
+                        VendasPorFabricante = new List<object>()
+                    });
+                }
 
-                var vendasPorConcessionaria =
-                    vendas
-                        .GroupBy(v =>
-                            v.Concessionaria != null
-                                ? v.Concessionaria.Nome
-                                : "Desconhecida")
-                        .Select(g =>
-                            new {
-                                Concessionaria = g.Key,
-                                ValorTotal = g.Sum(v => v.PrecoVenda),
-                                QuantidadeVendas = g.Count()
-                            })
-                        .ToList();
+                var vendasPorTipo = new List<object>();
+                var vendasPorConcessionaria = new List<object>();
+                var vendasPorFabricante = new List<object>();
 
-                var vendasPorFabricante =
-                    vendas
-                        .GroupBy(v =>
-                            v.Fabricante != null
-                                ? v.Fabricante.Nome
-                                : "Desconhecido")
-                        .Select(g =>
-                            new {
-                                Fabricante = g.Key,
-                                ValorTotal = g.Sum(v => v.PrecoVenda),
-                                QuantidadeVendas = g.Count()
-                            })
-                        .ToList();
+                try
+                {
+                    vendasPorTipo =
+                        vendas
+                            .GroupBy(v =>
+                                v.Veiculo != null
+                                    ? v.Veiculo.TipoVeiculo.ToString()
+                                    : "Desconhecido")
+                            .Select(g =>
+                                new {
+                                    TipoVeiculo = g.Key,
+                                    ValorTotal = g.Sum(v => v.PrecoVenda),
+                                    QuantidadeVendas = g.Count()
+                                })
+                            .ToList<object>();
+                }
+                catch (Exception ex)
+                {
+                }
+
+                try
+                {
+                    vendasPorConcessionaria =
+                        vendas
+                            .GroupBy(v =>
+                                v.Concessionaria != null
+                                    ? v.Concessionaria.Nome
+                                    : "Desconhecida")
+                            .Select(g =>
+                                new {
+                                    Concessionaria = g.Key,
+                                    ValorTotal = g.Sum(v => v.PrecoVenda),
+                                    QuantidadeVendas = g.Count()
+                                })
+                            .ToList<object>();
+                }
+                catch (Exception ex)
+                {
+                }
+
+                try
+                {
+                    vendasPorFabricante =
+                        vendas
+                            .GroupBy(v =>
+                                v.Fabricante != null
+                                    ? v.Fabricante.Nome
+                                    : "Desconhecido")
+                            .Select(g =>
+                                new {
+                                    Fabricante = g.Key,
+                                    ValorTotal = g.Sum(v => v.PrecoVenda),
+                                    QuantidadeVendas = g.Count()
+                                })
+                            .ToList<object>();
+                }
+                catch (Exception ex)
+                {
+                }
 
                 return Ok(new {
                     VendasPorTipo = vendasPorTipo,

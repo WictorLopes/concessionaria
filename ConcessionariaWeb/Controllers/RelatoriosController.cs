@@ -34,8 +34,12 @@ namespace ConcessionariaWeb.Controllers
                         .Where(v =>
                             v.DataVenda.Year == ano && v.DataVenda.Month == mes)
                         .Include(v => v.Veiculo)
-                        .ThenInclude(veiculo => veiculo.Fabricante)
                         .Include(v => v.Concessionaria)
+                        .Include(v => v.Fabricante)
+                        .ToListAsync();
+
+                var agrupado =
+                    vendas
                         .GroupBy(v =>
                             new {
                                 TipoVeiculo =
@@ -47,9 +51,8 @@ namespace ConcessionariaWeb.Controllers
                                         ? v.Concessionaria.Nome
                                         : "Desconhecida",
                                 FabricanteNome =
-                                    v.Veiculo != null &&
-                                    v.Veiculo.Fabricante != null
-                                        ? v.Veiculo.Fabricante.Nome
+                                    v.Fabricante != null
+                                        ? v.Fabricante.Nome
                                         : "Desconhecido"
                             })
                         .Select(g =>
@@ -60,9 +63,9 @@ namespace ConcessionariaWeb.Controllers
                                 ValorTotal = g.Sum(v => v.PrecoVenda),
                                 QuantidadeVendas = g.Count()
                             })
-                        .ToListAsync();
+                        .ToList();
 
-                return Ok(vendas);
+                return Ok(agrupado);
             }
             catch (Exception ex)
             {

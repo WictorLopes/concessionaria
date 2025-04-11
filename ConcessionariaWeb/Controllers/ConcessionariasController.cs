@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ConcessionariaWeb.Data;
 using ConcessionariaWeb.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ConcessionariaWeb.Controllers
 {
@@ -17,36 +18,46 @@ namespace ConcessionariaWeb.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Concessionaria>>> GetConcessionarias()
+        public async Task<ActionResult<IEnumerable<Concessionaria>>>
+        GetConcessionarias()
         {
-            return await _context.Concessionarias.ToListAsync();
+            var concessionarias =
+                await _context
+                    .Concessionarias
+                    .Where(c => !c.Excluido)
+                    .ToListAsync();
+
+            return Ok(concessionarias);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Concessionaria>> GetConcessionaria(int id)
+        public async Task<ActionResult<Concessionaria>>
+        GetConcessionaria(int id)
         {
             var concessionaria = await _context.Concessionarias.FindAsync(id);
 
-            if (concessionaria == null)
-                return NotFound();
+            if (concessionaria == null) return NotFound();
 
             return concessionaria;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Concessionaria>> PostConcessionaria(Concessionaria concessionaria)
+        public async Task<ActionResult<Concessionaria>>
+        PostConcessionaria(Concessionaria concessionaria)
         {
-            _context.Concessionarias.Add(concessionaria);
+            _context.Concessionarias.Add (concessionaria);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetConcessionaria), new { id = concessionaria.Id }, concessionaria);
+            return CreatedAtAction(nameof(GetConcessionaria),
+            new { id = concessionaria.Id },
+            concessionaria);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutConcessionaria(int id, Concessionaria concessionaria)
+        public async Task<IActionResult>
+        PutConcessionaria(int id, Concessionaria concessionaria)
         {
-            if (id != concessionaria.Id)
-                return BadRequest();
+            if (id != concessionaria.Id) return BadRequest();
 
             _context.Entry(concessionaria).State = EntityState.Modified;
 
@@ -66,16 +77,34 @@ namespace ConcessionariaWeb.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> DeleteConcessionaria(int id)
         {
-            var concessionaria = await _context.Concessionarias.FindAsync(id);
-            if (concessionaria == null)
-                return NotFound();
+            try
+            {
+                var concessionaria =
+                    await _context.Concessionarias.FindAsync(id);
+                if (concessionaria == null)
+                {
+                    return NotFound(new {
+                        message = "Concessionária não encontrada."
+                    });
+                }
 
-            _context.Concessionarias.Remove(concessionaria);
-            await _context.SaveChangesAsync();
+                concessionaria.Excluido = true;
 
-            return NoContent();
+                await _context.SaveChangesAsync();
+
+                return Ok(new {
+                    message =
+                        "Concessionária marcada como excluída com sucesso."
+                });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500,
+                new { message = "Erro interno ao excluir concessionária." });
+            }
         }
     }
 }

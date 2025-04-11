@@ -32,5 +32,7 @@ namespace ConcessionariaWeb.Models
 
         [Range(1, int.MaxValue, ErrorMessage = "A capacidade deve ser maior que 0.")]
         public int CapacidadeMaximaVeiculos { get; set; }
+
+        public bool Excluido { get; set; } = false;
     }
 }

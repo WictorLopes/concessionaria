@@ -16,6 +16,9 @@
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
   </head>
   <body>
+    <div id="loading" class="loading-overlay hidden">
+      <div class="spinner"></div>
+    </div>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container">
@@ -52,12 +55,14 @@
             <li class="nav-item">
               <a class="nav-link" href="../veiculo/listar.html">Veículos</a>
             </li>
-            <div id="listar-usuarios-container" style="display: flex;">
+            <div id="listar-usuarios-container" style="display: flex">
               <li class="nav-item">
                 <a class="nav-link" href="listar.html">Usuários</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="../relatorios/listar.html">Relatórios</a>
+                <a class="nav-link" href="../relatorios/listar.html"
+                  >Relatórios</a
+                >
               </li>
             </div>
           </ul>
@@ -71,7 +76,9 @@
       <h1 class="text-center mb-4">Relatório de Vendas Mensais</h1>
       <!-- Botão Voltar para o Dashboard -->
       <div class="text-center mb-4">
-        <a href="../index.html" class="btn btn-secondary">Voltar para o Dashboard</a>
+        <a href="../index.html" class="btn btn-secondary"
+          >Voltar para o Dashboard</a
+        >
       </div>
 
       <!-- Filtros para o Relatório -->
@@ -148,7 +155,7 @@
       <!-- Botão para Exibir o Dashboard -->
       <div class="text-center mb-4" style="margin-top: 50px">
         <button id="exibir-dashboard" class="btn btn-secondary">
-          Exibir Dashboard
+          Exibir Vendas Anuais
         </button>
       </div>
 

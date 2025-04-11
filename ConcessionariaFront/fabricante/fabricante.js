@@ -1,4 +1,5 @@
-const apiUrlFabricante = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/fabricantes";
+const apiUrlFabricante =
+  "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/fabricantes";
 
 // Aguarda o DOM estar carregado
 document.addEventListener("DOMContentLoaded", function () {
@@ -8,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Função para limpar mensagens
   function limparMensagens() {
     const campos = ["nome", "paisOrigem", "anoFundacao", "website"];
-    campos.forEach(campo => {
+    campos.forEach((campo) => {
       const errorDiv = document.getElementById(`${campo}Error`);
       if (errorDiv) {
         errorDiv.textContent = "";
@@ -40,6 +41,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Função para controlar o loading
+  function toggleLoading(show) {
+    const loading = document.getElementById("loading");
+    if (loading) {
+      if (show) {
+        loading.classList.remove("hidden");
+      } else {
+        loading.classList.add("hidden");
+      }
+    }
+  }
+
   // Cadastrar novo fabricante
   const formCadastro = document.getElementById("formFabricante");
   if (formCadastro) {
@@ -51,19 +64,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const nome = document.getElementById("nome").value.trim();
       const paisOrigem = document.getElementById("paisOrigem").value.trim();
-      const anoFundacao = parseInt(document.getElementById("anoFundacao").value);
+      const anoFundacao = parseInt(
+        document.getElementById("anoFundacao").value
+      );
       let website = document.getElementById("website").value.trim();
 
       const anoAtual = new Date().getFullYear();
 
       // Validações
       if (nome.length > 100) {
-        exibirErro("nome", "O nome do fabricante não pode exceder 100 caracteres.");
+        exibirErro(
+          "nome",
+          "O nome do fabricante não pode exceder 100 caracteres."
+        );
         return;
       }
 
       if (paisOrigem.length > 50) {
-        exibirErro("paisOrigem", "O nome do país não pode exceder 50 caracteres.");
+        exibirErro(
+          "paisOrigem",
+          "O nome do país não pode exceder 50 caracteres."
+        );
         return;
       }
 
@@ -73,7 +94,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       if (anoFundacao < 1800) {
-        exibirErro("anoFundacao", "O ano de fundação deve ser a partir de 1800.");
+        exibirErro(
+          "anoFundacao",
+          "O ano de fundação deve ser a partir de 1800."
+        );
         return;
       }
 
@@ -86,7 +110,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Testa se é uma URL válida
         if (!urlRegex.test(website)) {
-          exibirErro("website", "Por favor, insira um website válido (ex.: https://exemplo.com).");
+          exibirErro(
+            "website",
+            "Por favor, insira um website válido (ex.: https://exemplo.com)."
+          );
           return;
         }
       }
@@ -99,6 +126,8 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       try {
+        toggleLoading(true);
+
         const response = await fetch(apiUrlFabricante, {
           method: "POST",
           headers: {
@@ -123,6 +152,8 @@ document.addEventListener("DOMContentLoaded", function () {
       } catch (error) {
         console.error("Erro ao cadastrar fabricante:", error);
         exibirErro("nome", "Erro ao cadastrar fabricante: " + error.message);
+      } finally {
+        toggleLoading(false);
       }
     });
   }
@@ -132,38 +163,52 @@ document.addEventListener("DOMContentLoaded", function () {
   if (tabelaFabricantes) {
     async function carregarFabricantes() {
       try {
+        toggleLoading(true);
+
         const resposta = await fetch(apiUrlFabricante, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         if (!resposta.ok) {
-          throw new Error(`Erro na API: ${resposta.status} - ${await resposta.text()}`);
+          throw new Error(
+            `Erro na API: ${resposta.status} - ${await resposta.text()}`
+          );
         }
         const fabricantes = await resposta.json();
         tabelaFabricantes.innerHTML = "";
 
         fabricantes.forEach((fabricante) => {
           tabelaFabricantes.innerHTML += `
-            <tr>
-              <td>${fabricante.nome}</td>
-              <td>${fabricante.paisOrigem}</td>
-              <td>${fabricante.anoFundacao}</td>
-              <td><a href="${fabricante.website}" target="_blank">${fabricante.website || "N/A"}</a></td>
-              <td>
-                <a href="editar.html?id=${fabricante.id}" class="btn btn-sm btn-warning">Editar</a>
-                <button class="btn btn-sm btn-danger" onclick="excluirFabricante(${fabricante.id})">Excluir</button>
-              </td>
-            </tr>
-          `;
+                        <tr>
+                            <td>${fabricante.nome}</td>
+                            <td>${fabricante.paisOrigem}</td>
+                            <td>${fabricante.anoFundacao}</td>
+                            <td><a href="${
+                              fabricante.website
+                            }" target="_blank">${
+            fabricante.website || "N/A"
+          }</a></td>
+                            <td>
+                                <a href="editar.html?id=${
+                                  fabricante.id
+                                }" class="btn btn-sm btn-warning">Editar</a>
+                                <button class="btn btn-sm btn-danger" onclick="excluirFabricante(${
+                                  fabricante.id
+                                })">Excluir</button>
+                            </td>
+                        </tr>
+                    `;
         });
       } catch (error) {
         console.error("Erro ao carregar fabricantes:", error);
         tabelaFabricantes.innerHTML = `
-          <tr>
-            <td colspan="5" class="text-center text-danger">Erro ao carregar fabricantes.</td>
-          </tr>
-        `;
+                    <tr>
+                        <td colspan="5" class="text-center text-danger">Erro ao carregar fabricantes.</td>
+                    </tr>
+                `;
+      } finally {
+        toggleLoading(false);
       }
     }
 
@@ -185,24 +230,32 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       try {
+        toggleLoading(true);
+
         const resposta = await fetch(`${apiUrlFabricante}/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         if (!resposta.ok) {
-          throw new Error(`Erro na API: ${resposta.status} - ${await resposta.text()}`);
+          throw new Error(
+            `Erro na API: ${resposta.status} - ${await resposta.text()}`
+          );
         }
         const fabricante = await resposta.json();
 
         document.getElementById("nome").value = fabricante.nome || "";
-        document.getElementById("paisOrigem").value = fabricante.paisOrigem || "";
-        document.getElementById("anoFundacao").value = fabricante.anoFundacao || "";
+        document.getElementById("paisOrigem").value =
+          fabricante.paisOrigem || "";
+        document.getElementById("anoFundacao").value =
+          fabricante.anoFundacao || "";
         document.getElementById("website").value = fabricante.website || "";
         document.getElementById("idFabricante").value = fabricante.id;
       } catch (error) {
         console.error("Erro ao carregar fabricante:", error);
         exibirErro("nome", "Erro ao carregar fabricante.");
+      } finally {
+        toggleLoading(false);
       }
     }
 
@@ -217,19 +270,27 @@ document.addEventListener("DOMContentLoaded", function () {
       const id = document.getElementById("idFabricante").value;
       const nome = document.getElementById("nome").value.trim();
       const paisOrigem = document.getElementById("paisOrigem").value.trim();
-      const anoFundacao = parseInt(document.getElementById("anoFundacao").value);
+      const anoFundacao = parseInt(
+        document.getElementById("anoFundacao").value
+      );
       let website = document.getElementById("website").value.trim();
 
       const anoAtual = new Date().getFullYear();
 
       // Validações
       if (nome.length > 100) {
-        exibirErro("nome", "O nome do fabricante não pode exceder 100 caracteres.");
+        exibirErro(
+          "nome",
+          "O nome do fabricante não pode exceder 100 caracteres."
+        );
         return;
       }
 
       if (paisOrigem.length > 50) {
-        exibirErro("paisOrigem", "O nome do país não pode exceder 50 caracteres.");
+        exibirErro(
+          "paisOrigem",
+          "O nome do país não pode exceder 50 caracteres."
+        );
         return;
       }
 
@@ -239,7 +300,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       if (anoFundacao < 1800) {
-        exibirErro("anoFundacao", "O ano de fundação deve ser a partir de 1800.");
+        exibirErro(
+          "anoFundacao",
+          "O ano de fundação deve ser a partir de 1800."
+        );
         return;
       }
 
@@ -250,7 +314,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (!urlRegex.test(website)) {
-          exibirErro("website", "Por favor, insira um website válido (ex.: https://exemplo.com).");
+          exibirErro(
+            "website",
+            "Por favor, insira um website válido (ex.: https://exemplo.com)."
+          );
           return;
         }
       }
@@ -264,6 +331,8 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       try {
+        toggleLoading(true);
+
         const resposta = await fetch(`${apiUrlFabricante}/${id}`, {
           method: "PUT",
           headers: {
@@ -285,6 +354,8 @@ document.addEventListener("DOMContentLoaded", function () {
       } catch (error) {
         console.error("Erro ao atualizar fabricante:", error);
         exibirErro("nome", "Erro ao atualizar fabricante: " + error.message);
+      } finally {
+        toggleLoading(false);
       }
     });
   }
@@ -294,6 +365,8 @@ document.addEventListener("DOMContentLoaded", function () {
 async function excluirFabricante(id) {
   if (confirm("Tem certeza que deseja excluir este fabricante?")) {
     try {
+      toggleLoading(true);
+
       const resposta = await fetch(`${apiUrlFabricante}/${id}`, {
         method: "DELETE",
         headers: {
@@ -307,10 +380,10 @@ async function excluirFabricante(id) {
       const tabelaFabricantes = document.getElementById("tabelaFabricantes");
       if (tabelaFabricantes) {
         tabelaFabricantes.innerHTML = `
-          <tr>
-            <td colspan="5" class="text-center text-success">Fabricante excluído com sucesso!</td>
-          </tr>
-        `;
+                    <tr>
+                        <td colspan="5" class="text-center text-success">Fabricante excluído com sucesso!</td>
+                    </tr>
+                `;
         setTimeout(() => {
           window.location.reload();
         }, 1500);
@@ -320,11 +393,13 @@ async function excluirFabricante(id) {
       const tabelaFabricantes = document.getElementById("tabelaFabricantes");
       if (tabelaFabricantes) {
         tabelaFabricantes.innerHTML = `
-          <tr>
-            <td colspan="5" class="text-center text-danger">Erro ao excluir fabricante: ${error.message}</td>
-          </tr>
-        `;
+                    <tr>
+                        <td colspan="5" class="text-center text-danger">Erro ao excluir fabricante: ${error.message}</td>
+                    </tr>
+                `;
       }
+    } finally {
+      toggleLoading(false);
     }
   }
 }

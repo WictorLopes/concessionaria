@@ -16,6 +16,9 @@
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
   </head>
   <body>
+    <div id="loading" class="loading-overlay hidden">
+      <div class="spinner"></div>
+    </div>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container">
@@ -52,12 +55,14 @@
             <li class="nav-item">
               <a class="nav-link" href="../veiculo/listar.html">Veículos</a>
             </li>
-            <div id="listar-usuarios-container" style="display: flex;">
+            <div id="listar-usuarios-container" style="display: flex">
               <li class="nav-item">
                 <a class="nav-link" href="../usuario/listar.html">Usuários</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="../relatorios/listar.html">Relatórios</a>
+                <a class="nav-link" href="../relatorios/listar.html"
+                  >Relatórios</a
+                >
               </li>
             </div>
           </ul>
@@ -71,7 +76,6 @@
       <div class="d-flex justify-content-between mb-4">
         <a href="../index.html" class="btn btn-secondary">Voltar</a>
         <a href="cadastro.html" class="btn btn-primary">Nova Concessionária</a>
-        
       </div>
       <div class="table-responsive">
         <table class="table table-striped table-hover align-middle">

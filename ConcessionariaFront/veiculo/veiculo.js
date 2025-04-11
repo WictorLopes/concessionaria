@@ -1,12 +1,21 @@
-const apiUrlVeiculo = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/veiculos";
-const apiUrlFabricante = "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/fabricantes";
+const apiUrlVeiculo =
+  "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/veiculos";
+const apiUrlFabricante =
+  "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/fabricantes";
 
 // Aguarda o DOM estar carregado
 document.addEventListener("DOMContentLoaded", function () {
   // Função para limpar mensagens
   function limparMensagens() {
-    const campos = ["nomeModelo", "anoFabricacao", "preco", "fabricante", "tipoVeiculo", "descricao"];
-    campos.forEach(campo => {
+    const campos = [
+      "nomeModelo",
+      "anoFabricacao",
+      "preco",
+      "fabricante",
+      "tipoVeiculo",
+      "descricao",
+    ];
+    campos.forEach((campo) => {
       const errorDiv = document.getElementById(`${campo}Error`);
       if (errorDiv) {
         errorDiv.textContent = "";
@@ -38,11 +47,25 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Função para controlar o loading
+  function toggleLoading(show) {
+    const loading = document.getElementById("loading");
+    if (loading) {
+      if (show) {
+        loading.classList.remove("hidden");
+      } else {
+        loading.classList.add("hidden");
+      }
+    }
+  }
+
   // Cadastrar novo veículo
   const formCadastroVeiculo = document.getElementById("formCadastroVeiculo");
   if (formCadastroVeiculo) {
     async function carregarFabricantes() {
       try {
+        toggleLoading(true); 
+
         const resposta = await fetch(`${apiUrlFabricante}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -67,6 +90,8 @@ document.addEventListener("DOMContentLoaded", function () {
       } catch (error) {
         console.error("Erro ao carregar fabricantes:", error);
         exibirErro("fabricante", "Erro ao carregar fabricantes.");
+      } finally {
+        toggleLoading(false); 
       }
     }
 
@@ -79,9 +104,13 @@ document.addEventListener("DOMContentLoaded", function () {
       limparMensagens();
 
       const nomeModelo = document.getElementById("nomeModelo").value.trim();
-      const anoFabricacao = parseInt(document.getElementById("anoFabricacao").value);
+      const anoFabricacao = parseInt(
+        document.getElementById("anoFabricacao").value
+      );
       const preco = parseFloat(document.getElementById("preco").value);
-      const fabricanteId = parseInt(document.getElementById("fabricante").value);
+      const fabricanteId = parseInt(
+        document.getElementById("fabricante").value
+      );
       const tipoVeiculo = document.getElementById("tipoVeiculo").value;
       const descricao = document.getElementById("descricao").value.trim();
 
@@ -93,20 +122,32 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
       if (nomeModelo.length > 100) {
-        exibirErro("nomeModelo", "O nome do modelo do veículo não pode exceder 100 caracteres.");
+        exibirErro(
+          "nomeModelo",
+          "O nome do modelo do veículo não pode exceder 100 caracteres."
+        );
         return;
       }
 
       if (isNaN(anoFabricacao)) {
-        exibirErro("anoFabricacao", "Por favor, insira um ano de fabricação válido.");
+        exibirErro(
+          "anoFabricacao",
+          "Por favor, insira um ano de fabricação válido."
+        );
         return;
       }
       if (anoFabricacao > anoAtual) {
-        exibirErro("anoFabricacao", "O ano de fabricação não pode ser no futuro.");
+        exibirErro(
+          "anoFabricacao",
+          "O ano de fabricação não pode ser no futuro."
+        );
         return;
       }
       if (anoFabricacao < 1800) {
-        exibirErro("anoFabricacao", "O ano de fabricação deve ser a partir de 1800.");
+        exibirErro(
+          "anoFabricacao",
+          "O ano de fabricação deve ser a partir de 1800."
+        );
         return;
       }
 
@@ -130,7 +171,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       if (descricao.length > 500) {
-        exibirErro("descricao", "A descrição do modelo do veículo não pode exceder 500 caracteres.");
+        exibirErro(
+          "descricao",
+          "A descrição do modelo do veículo não pode exceder 500 caracteres."
+        );
         return;
       }
 
@@ -144,6 +188,8 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       try {
+        toggleLoading(true); 
+
         const resposta = await fetch(`${apiUrlVeiculo}`, {
           method: "POST",
           headers: {
@@ -165,54 +211,68 @@ document.addEventListener("DOMContentLoaded", function () {
       } catch (error) {
         console.error("Erro ao cadastrar veículo:", error);
         exibirErro("nomeModelo", "Erro ao cadastrar veículo: " + error.message);
+      } finally {
+        toggleLoading(false); 
       }
     });
   }
 
   // Função para formatar o preço
-function formatarPreco(valor) {
-  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
+  function formatarPreco(valor) {
+    return valor.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  }
 
   // Listar veículos
   const tabelaVeiculos = document.getElementById("tabelaVeiculos");
   if (tabelaVeiculos) {
     async function carregarVeiculos() {
       try {
+        toggleLoading(true); 
+
         const resposta = await fetch(`${apiUrlVeiculo}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         if (!resposta.ok) {
-          throw new Error(`Erro na API: ${resposta.status} - ${await resposta.text()}`);
+          throw new Error(
+            `Erro na API: ${resposta.status} - ${await resposta.text()}`
+          );
         }
         const veiculos = await resposta.json();
 
         veiculos.forEach((veiculo) => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${veiculo.modelo}</td>
-            <td>${veiculo.anoFabricacao}</td>
-            <td>R$ ${formatarPreco(veiculo.preco)}</td>
-            <td>${veiculo.fabricanteNome}</td>
-            <td>${veiculo.tipoVeiculo}</td>
-            <td>${veiculo.descricao || "-"}</td>
-            <td>
-              <button class="btn btn-sm btn-warning me-1" onclick="editarVeiculo(${veiculo.id})">Editar</button>
-              <button class="btn btn-sm btn-danger" onclick="excluirVeiculo(${veiculo.id})">Excluir</button>
-            </td>
-          `;
+                        <td>${veiculo.modelo}</td>
+                        <td>${veiculo.anoFabricacao}</td>
+                        <td>R$ ${formatarPreco(veiculo.preco)}</td>
+                        <td>${veiculo.fabricanteNome}</td>
+                        <td>${veiculo.tipoVeiculo}</td>
+                        <td>${veiculo.descricao || "-"}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="editarVeiculo(${
+                              veiculo.id
+                            })">Editar</button>
+                            <button class="btn btn-sm btn-danger" onclick="excluirVeiculo(${
+                              veiculo.id
+                            })">Excluir</button>
+                        </td>
+                    `;
           tabelaVeiculos.appendChild(tr);
         });
       } catch (error) {
         console.error("Erro ao carregar veículos:", error);
         tabelaVeiculos.innerHTML = `
-          <tr>
-            <td colspan="7" class="text-center text-danger">Erro ao carregar veículos.</td>
-          </tr>
-        `;
+                    <tr>
+                        <td colspan="7" class="text-center text-danger">Erro ao carregar veículos.</td>
+                    </tr>
+                `;
+      } finally {
+        toggleLoading(false); 
       }
     }
 
@@ -238,13 +298,17 @@ function formatarPreco(valor) {
 
     async function carregarVeiculo(id) {
       try {
+        toggleLoading(true); 
+
         const resposta = await fetch(`${apiUrlVeiculo}/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         if (!resposta.ok) {
-          throw new Error(`Erro na API: ${resposta.status} - ${await resposta.text()}`);
+          throw new Error(
+            `Erro na API: ${resposta.status} - ${await resposta.text()}`
+          );
         }
         const veiculo = await resposta.json();
 
@@ -257,11 +321,15 @@ function formatarPreco(valor) {
       } catch (error) {
         console.error("Erro ao carregar veículo:", error);
         exibirErro("nomeModelo", "Erro ao carregar dados do veículo.");
+      } finally {
+        toggleLoading(false); 
       }
     }
 
     async function carregarFabricantesEditar() {
       try {
+        toggleLoading(true); 
+
         const resposta = await fetch(`${apiUrlFabricante}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -286,6 +354,8 @@ function formatarPreco(valor) {
       } catch (error) {
         console.error("Erro ao carregar fabricantes:", error);
         exibirErro("fabricante", "Erro ao carregar fabricantes.");
+      } finally {
+        toggleLoading(false); 
       }
     }
 
@@ -296,9 +366,13 @@ function formatarPreco(valor) {
       limparMensagens();
 
       const nomeModelo = document.getElementById("nomeModelo").value.trim();
-      const anoFabricacao = parseInt(document.getElementById("anoFabricacao").value);
+      const anoFabricacao = parseInt(
+        document.getElementById("anoFabricacao").value
+      );
       const preco = parseFloat(document.getElementById("preco").value);
-      const fabricanteId = parseInt(document.getElementById("fabricante").value);
+      const fabricanteId = parseInt(
+        document.getElementById("fabricante").value
+      );
       const tipoVeiculo = document.getElementById("tipoVeiculo").value;
       const descricao = document.getElementById("descricao").value.trim();
 
@@ -310,20 +384,32 @@ function formatarPreco(valor) {
         return;
       }
       if (nomeModelo.length > 100) {
-        exibirErro("nomeModelo", "O nome do modelo do veículo não pode exceder 100 caracteres.");
+        exibirErro(
+          "nomeModelo",
+          "O nome do modelo do veículo não pode exceder 100 caracteres."
+        );
         return;
       }
 
       if (isNaN(anoFabricacao)) {
-        exibirErro("anoFabricacao", "Por favor, insira um ano de fabricação válido.");
+        exibirErro(
+          "anoFabricacao",
+          "Por favor, insira um ano de fabricação válido."
+        );
         return;
       }
       if (anoFabricacao > anoAtual) {
-        exibirErro("anoFabricacao", "O ano de fabricação não pode ser no futuro.");
+        exibirErro(
+          "anoFabricacao",
+          "O ano de fabricação não pode ser no futuro."
+        );
         return;
       }
       if (anoFabricacao < 1800) {
-        exibirErro("anoFabricacao", "O ano de fabricação deve ser a partir de 1800.");
+        exibirErro(
+          "anoFabricacao",
+          "O ano de fabricação deve ser a partir de 1800."
+        );
         return;
       }
 
@@ -347,7 +433,10 @@ function formatarPreco(valor) {
       }
 
       if (descricao.length > 500) {
-        exibirErro("descricao", "A descrição do modelo do veículo não pode exceder 500 caracteres.");
+        exibirErro(
+          "descricao",
+          "A descrição do modelo do veículo não pode exceder 500 caracteres."
+        );
         return;
       }
 
@@ -362,6 +451,8 @@ function formatarPreco(valor) {
       };
 
       try {
+        toggleLoading(true); 
+
         const resposta = await fetch(`${apiUrlVeiculo}/${idVeiculo}`, {
           method: "PUT",
           headers: {
@@ -383,6 +474,8 @@ function formatarPreco(valor) {
       } catch (error) {
         console.error("Erro ao atualizar veículo:", error);
         exibirErro("nomeModelo", "Erro ao atualizar veículo: " + error.message);
+      } finally {
+        toggleLoading(false); 
       }
     });
   }
@@ -393,10 +486,11 @@ function editarVeiculo(id) {
   window.location.href = `editar.html?id=${id}`;
 }
 
-
 async function excluirVeiculo(id) {
   if (confirm("Tem certeza que deseja excluir este veículo?")) {
     try {
+      toggleLoading(true); 
+
       const token = localStorage.getItem("token");
       if (!token) {
         alert("Sessão expirada. Faça login novamente.");
@@ -406,7 +500,6 @@ async function excluirVeiculo(id) {
         window.location.href = "/login.html";
         return;
       }
-
 
       const resposta = await fetch(`${apiUrlVeiculo}/${id}`, {
         method: "DELETE",
@@ -432,10 +525,10 @@ async function excluirVeiculo(id) {
       const tabelaVeiculos = document.getElementById("tabelaVeiculos");
       if (tabelaVeiculos) {
         tabelaVeiculos.innerHTML = `
-          <tr>
-            <td colspan="7" class="text-center text-success">Veículo excluído com sucesso!</td>
-          </tr>
-        `;
+                    <tr>
+                        <td colspan="7" class="text-center text-success">Veículo excluído com sucesso!</td>
+                    </tr>
+                `;
         setTimeout(() => {
           window.location.reload();
         }, 1500);
@@ -445,11 +538,13 @@ async function excluirVeiculo(id) {
       const tabelaVeiculos = document.getElementById("tabelaVeiculos");
       if (tabelaVeiculos) {
         tabelaVeiculos.innerHTML = `
-          <tr>
-            <td colspan="7" class="text-center text-danger">Erro ao excluir veículo: ${error.message}</td>
-          </tr>
-        `;
+                    <tr>
+                        <td colspan="7" class="text-center text-danger">Erro ao excluir veículo: ${error.message}</td>
+                    </tr>
+                `;
       }
+    } finally {
+      toggleLoading(false); 
     }
   }
 }

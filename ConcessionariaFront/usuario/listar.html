@@ -16,6 +16,9 @@
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
   </head>
   <body>
+    <div id="loading" class="loading-overlay hidden">
+      <div class="spinner"></div>
+    </div>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container">
@@ -100,6 +103,17 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/auth.js"></script>
     <script>
+      // Função para controlar o loading
+      function toggleLoading(show) {
+        const loading = document.getElementById("loading");
+        if (loading) {
+          if (show) {
+            loading.classList.remove("hidden");
+          } else {
+            loading.classList.add("hidden");
+          }
+        }
+      }
 
       // Verificar autenticação
       const token = verificarAutenticacao();
@@ -116,6 +130,8 @@
       // Função para carregar usuários
       async function carregarUsuarios() {
         try {
+          toggleLoading(true); 
+
           const resposta = await fetch(`${apiUrlAuth}/users`, {
             method: "GET",
             headers: {
@@ -144,17 +160,17 @@
             let actions = "";
             if (tipoUsuarioLogado === "Administrador") {
               actions = `
-                            <button class="btn btn-warning btn-sm editar-usuario" data-email="${usuario.email}">Editar</button>
-                            <button class="btn btn-danger btn-sm excluir-usuario" data-email="${usuario.email}">Excluir</button>
-                        `;
+                          <button class="btn btn-warning btn-sm editar-usuario" data-email="${usuario.email}">Editar</button>
+                          <button class="btn btn-danger btn-sm excluir-usuario" data-email="${usuario.email}">Excluir</button>
+                      `;
             }
             tr.innerHTML = `
-                        <td>${usuario.nome}</td>
-                        <td>${usuario.telefone}</td>
-                        <td>${usuario.email}</td>
-                        <td>${usuario.tipo}</td>
-                        <td>${actions}</td>
-                    `;
+                      <td>${usuario.nome}</td>
+                      <td>${usuario.telefone}</td>
+                      <td>${usuario.email}</td>
+                      <td>${usuario.tipo}</td>
+                      <td>${actions}</td>
+                  `;
             tbody.appendChild(tr);
           });
 
@@ -176,6 +192,8 @@
                   confirm(`Tem certeza que deseja excluir o usuário ${email}?`)
                 ) {
                   try {
+                    toggleLoading(true); 
+
                     const resposta = await fetch(
                       `${apiUrlAuth}/users/${email}`,
                       {
@@ -200,6 +218,8 @@
                   } catch (error) {
                     console.error("Erro ao excluir:", error);
                     alert(error.message);
+                  } finally {
+                    toggleLoading(false); 
                   }
                 }
               });
@@ -209,6 +229,8 @@
           console.error("Erro:", error);
           alert(error.message);
           window.location.href = "../login.html";
+        } finally {
+          toggleLoading(false); 
         }
       }
 

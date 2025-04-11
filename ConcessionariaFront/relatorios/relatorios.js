@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const ano = document.getElementById("ano-dashboard").value;
 
         try {
-            toggleLoading(true); 
+            toggleLoading(true);
 
             const resposta = await fetch(`${apiUrlDashboardVendas}?ano=${ano}`, {
                 headers: {
@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Erro ao carregar dados do dashboard:", error.message);
             exibirMensagem("Erro ao carregar dados do dashboard: " + error.message, "danger");
         } finally {
-            toggleLoading(false); 
+            toggleLoading(false);
         }
     }
 
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const mes = document.getElementById("mes").value;
 
         try {
-            toggleLoading(true); 
+            toggleLoading(true);
 
             const resposta = await fetch(`${apiUrlRelatoriosVendasMensais}?ano=${ano}&mes=${mes}`, {
                 headers: {
@@ -213,6 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>${item.tipoVeiculo}</td>
                     <td>${item.concessionaria}</td>
                     <td>${item.fabricante}</td>
+                    <td>${item.veiculo}</td>
                     <td>R$ ${formatarPreco(item.valorTotal)}</td>
                     <td>${item.quantidadeVendas}</td>
                 `;
@@ -228,7 +229,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("exportar-pdf").disabled = true;
             document.getElementById("exportar-excel").disabled = true;
         } finally {
-            toggleLoading(false); 
+            toggleLoading(false);
         }
     }
 
@@ -277,6 +278,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 item.tipoVeiculo,
                 item.concessionaria,
                 item.fabricante,
+                item.veiculo,
                 `R$ ${item.valorTotal.toFixed(2)}`,
                 item.quantidadeVendas.toString(),
             ]);
@@ -287,6 +289,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         "Tipo de Veículo",
                         "Concessionária",
                         "Fabricante",
+                        "Veículo",
                         "Valor Total (R$)",
                         "Quantidade de Vendas",
                     ],
@@ -309,6 +312,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     "Tipo de Veículo",
                     "Concessionária",
                     "Fabricante",
+                    "Veículo",
                     "Valor Total (R$)",
                     "Quantidade de Vendas",
                 ],
@@ -316,6 +320,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     item.tipoVeiculo,
                     item.concessionaria,
                     item.fabricante,
+                    item.veiculo,
                     item.valorTotal.toFixed(2),
                     item.quantidadeVendas,
                 ]),

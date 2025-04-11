@@ -53,13 +53,18 @@ namespace ConcessionariaWeb.Controllers
                                 FabricanteNome =
                                     v.Fabricante != null
                                         ? v.Fabricante.Nome
-                                        : "Desconhecido"
+                                        : "Desconhecido",
+                                VeiculoModelo =
+                                    v.Veiculo != null
+                                        ? v.Veiculo.Modelo
+                                        : "Desconhecido" // Adicionando o modelo do veículo no agrupamento
                             })
                         .Select(g =>
                             new RelatorioVendaMensal {
                                 TipoVeiculo = g.Key.TipoVeiculo,
                                 Concessionaria = g.Key.ConcessionariaNome,
                                 Fabricante = g.Key.FabricanteNome,
+                                Veiculo = g.Key.VeiculoModelo, // Preenchendo o campo Veiculo
                                 ValorTotal = g.Sum(v => v.PrecoVenda),
                                 QuantidadeVendas = g.Count()
                             })

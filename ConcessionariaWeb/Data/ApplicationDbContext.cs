@@ -50,7 +50,7 @@ namespace ConcessionariaWeb.Data
                 .HasOne(v => v.Fabricante)
                 .WithMany()
                 .HasForeignKey(v => v.FabricanteId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Relação: Venda -> Concessionaria
             builder

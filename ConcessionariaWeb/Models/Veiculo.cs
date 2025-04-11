@@ -36,5 +36,10 @@ namespace ConcessionariaWeb.Models
 
         [StringLength(500)]
         public string? Descricao { get; set; }
+        
+        [Required]  
+        public bool Vendido { get; set; } = false;
+
+
     }
 }

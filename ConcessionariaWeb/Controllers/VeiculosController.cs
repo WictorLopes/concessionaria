@@ -23,6 +23,7 @@ namespace ConcessionariaWeb.Controllers
             var veiculos =
                 await _context
                     .Veiculos
+                    .Where(v => !v.Vendido)
                     .Join(_context.Fabricantes,
                     veiculo => veiculo.FabricanteId,
                     fabricante => fabricante.Id,

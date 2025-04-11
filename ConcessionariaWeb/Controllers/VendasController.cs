@@ -75,6 +75,10 @@ namespace ConcessionariaWeb.Controllers
             venda.Veiculo = null;
             venda.Fabricante = null;
 
+            // Marcar o veículo como vendido
+            veiculo.Vendido = true;
+            _context.Veiculos.Update (veiculo);
+
             _context.Vendas.Add (venda);
             await _context.SaveChangesAsync();
 

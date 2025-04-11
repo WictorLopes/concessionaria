@@ -214,7 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>${item.concessionaria}</td>
                     <td>${item.fabricante}</td>
                     <td>${item.veiculo}</td>
-                    <td>R$ ${formatarPreco(item.valorTotal)}</td>
+                    <td>${formatarPreco(item.valorTotal)}</td>
                     <td>${item.quantidadeVendas}</td>
                 `;
                 tabelaRelatorio.appendChild(tr);

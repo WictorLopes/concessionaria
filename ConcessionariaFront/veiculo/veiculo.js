@@ -3,9 +3,7 @@ const apiUrlVeiculo =
 const apiUrlFabricante =
   "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/fabricantes";
 
-// Aguarda o DOM estar carregado
 document.addEventListener("DOMContentLoaded", function () {
-  // Função para limpar mensagens
   function limparMensagens() {
     const campos = [
       "nomeModelo",
@@ -29,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Função para exibir mensagem de erro
   function exibirErro(campo, mensagem) {
     const errorDiv = document.getElementById(`${campo}Error`);
     if (errorDiv) {
@@ -38,7 +35,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Função para exibir mensagem de sucesso
   function exibirSucesso(mensagem) {
     const successDiv = document.getElementById("successMessage");
     if (successDiv) {
@@ -47,7 +43,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Função para controlar o loading
   function toggleLoading(show) {
     const loading = document.getElementById("loading");
     if (loading) {
@@ -59,13 +54,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Cadastrar novo veículo
+  function desformatarPreco(valor) {
+    return parseFloat(valor.replace(/\./g, "").replace(",", "."));
+  }
+
   const formCadastroVeiculo = document.getElementById("formCadastroVeiculo");
   if (formCadastroVeiculo) {
     async function carregarFabricantes() {
       try {
-        toggleLoading(true); 
-
+        toggleLoading(true);
         const resposta = await fetch(`${apiUrlFabricante}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -91,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Erro ao carregar fabricantes:", error);
         exibirErro("fabricante", "Erro ao carregar fabricantes.");
       } finally {
-        toggleLoading(false); 
+        toggleLoading(false);
       }
     }
 
@@ -100,14 +97,14 @@ document.addEventListener("DOMContentLoaded", function () {
     formCadastroVeiculo.addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      // Limpar mensagens anteriores
       limparMensagens();
 
       const nomeModelo = document.getElementById("nomeModelo").value.trim();
       const anoFabricacao = parseInt(
         document.getElementById("anoFabricacao").value
       );
-      const preco = parseFloat(document.getElementById("preco").value);
+      const precoFormatado = document.getElementById("preco").value;
+      const preco = desformatarPreco(precoFormatado);
       const fabricanteId = parseInt(
         document.getElementById("fabricante").value
       );
@@ -116,7 +113,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const anoAtual = new Date().getFullYear();
 
-      // Validações
       if (!nomeModelo) {
         exibirErro("nomeModelo", "Por favor, insira o nome do modelo.");
         return;
@@ -188,8 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       try {
-        toggleLoading(true); 
-
+        toggleLoading(true);
         const resposta = await fetch(`${apiUrlVeiculo}`, {
           method: "POST",
           headers: {
@@ -212,12 +207,11 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Erro ao cadastrar veículo:", error);
         exibirErro("nomeModelo", "Erro ao cadastrar veículo: " + error.message);
       } finally {
-        toggleLoading(false); 
+        toggleLoading(false);
       }
     });
   }
 
-  // Função para formatar o preço
   function formatarPreco(valor) {
     return valor.toLocaleString("pt-BR", {
       style: "currency",
@@ -225,13 +219,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Listar veículos
   const tabelaVeiculos = document.getElementById("tabelaVeiculos");
   if (tabelaVeiculos) {
     async function carregarVeiculos() {
       try {
-        toggleLoading(true); 
-
+        toggleLoading(true);
         const resposta = await fetch(`${apiUrlVeiculo}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -249,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function () {
           tr.innerHTML = `
                         <td>${veiculo.modelo}</td>
                         <td>${veiculo.anoFabricacao}</td>
-                        <td>R$ ${formatarPreco(veiculo.preco)}</td>
+                        <td>${formatarPreco(veiculo.preco)}</td>
                         <td>${veiculo.fabricanteNome}</td>
                         <td>${veiculo.tipoVeiculo}</td>
                         <td>${veiculo.descricao || "-"}</td>
@@ -272,14 +264,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     </tr>
                 `;
       } finally {
-        toggleLoading(false); 
+        toggleLoading(false);
       }
     }
 
     carregarVeiculos();
   }
 
-  // Editar veículo
   const formEdicaoVeiculo = document.getElementById("formEdicaoVeiculo");
   if (formEdicaoVeiculo) {
     const params = new URLSearchParams(window.location.search);
@@ -298,8 +289,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function carregarVeiculo(id) {
       try {
-        toggleLoading(true); 
-
+        toggleLoading(true);
         const resposta = await fetch(`${apiUrlVeiculo}/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -314,7 +304,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById("nomeModelo").value = veiculo.modelo;
         document.getElementById("anoFabricacao").value = veiculo.anoFabricacao;
-        document.getElementById("preco").value = veiculo.preco;
+        document.getElementById("preco").value = veiculo.preco
+          .toFixed(2)
+          .replace(".", ",");
         document.getElementById("tipoVeiculo").value = veiculo.tipoVeiculo;
         document.getElementById("descricao").value = veiculo.descricao || "";
         document.getElementById("fabricante").value = veiculo.fabricanteId;
@@ -322,14 +314,13 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Erro ao carregar veículo:", error);
         exibirErro("nomeModelo", "Erro ao carregar dados do veículo.");
       } finally {
-        toggleLoading(false); 
+        toggleLoading(false);
       }
     }
 
     async function carregarFabricantesEditar() {
       try {
-        toggleLoading(true); 
-
+        toggleLoading(true);
         const resposta = await fetch(`${apiUrlFabricante}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -355,21 +346,21 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Erro ao carregar fabricantes:", error);
         exibirErro("fabricante", "Erro ao carregar fabricantes.");
       } finally {
-        toggleLoading(false); 
+        toggleLoading(false);
       }
     }
 
     formEdicaoVeiculo.addEventListener("submit", async function (event) {
       event.preventDefault();
 
-      // Limpar mensagens anteriores
       limparMensagens();
 
       const nomeModelo = document.getElementById("nomeModelo").value.trim();
       const anoFabricacao = parseInt(
         document.getElementById("anoFabricacao").value
       );
-      const preco = parseFloat(document.getElementById("preco").value);
+      const precoFormatado = document.getElementById("preco").value;
+      const preco = desformatarPreco(precoFormatado);
       const fabricanteId = parseInt(
         document.getElementById("fabricante").value
       );
@@ -378,7 +369,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const anoAtual = new Date().getFullYear();
 
-      // Validações
       if (!nomeModelo) {
         exibirErro("nomeModelo", "Por favor, insira o nome do modelo.");
         return;
@@ -451,8 +441,7 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       try {
-        toggleLoading(true); 
-
+        toggleLoading(true);
         const resposta = await fetch(`${apiUrlVeiculo}/${idVeiculo}`, {
           method: "PUT",
           headers: {
@@ -475,13 +464,12 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Erro ao atualizar veículo:", error);
         exibirErro("nomeModelo", "Erro ao atualizar veículo: " + error.message);
       } finally {
-        toggleLoading(false); 
+        toggleLoading(false);
       }
     });
   }
 });
 
-// Funções globais para listagem
 function editarVeiculo(id) {
   window.location.href = `editar.html?id=${id}`;
 }
@@ -489,8 +477,7 @@ function editarVeiculo(id) {
 async function excluirVeiculo(id) {
   if (confirm("Tem certeza que deseja excluir este veículo?")) {
     try {
-      toggleLoading(true); 
-
+      toggleLoading(true);
       const token = localStorage.getItem("token");
       if (!token) {
         alert("Sessão expirada. Faça login novamente.");
@@ -544,7 +531,7 @@ async function excluirVeiculo(id) {
                 `;
       }
     } finally {
-      toggleLoading(false); 
+      toggleLoading(false);
     }
   }
 }

@@ -23,7 +23,7 @@ namespace ConcessionariaWeb.Controllers
             var veiculos =
                 await _context
                     .Veiculos
-                    .Where(v => !v.Vendido)
+                    .Where(v => !v.Excluido)
                     .Join(_context.Fabricantes,
                     veiculo => veiculo.FabricanteId,
                     fabricante => fabricante.Id,
@@ -136,21 +136,7 @@ namespace ConcessionariaWeb.Controllers
                     });
                 }
 
-                // Encontrar todas as vendas associadas ao veículo
-                var vendasAssociadas =
-                    await _context
-                        .Vendas
-                        .Where(v => v.VeiculoId == id)
-                        .ToListAsync();
-
-                foreach (var venda in vendasAssociadas)
-                {
-                    venda.VeiculoId = null;
-                }
-
-                await _context.SaveChangesAsync();
-
-                _context.Veiculos.Remove (veiculo);
+                veiculo.Excluido = true;
                 await _context.SaveChangesAsync();
 
                 return Ok(new {

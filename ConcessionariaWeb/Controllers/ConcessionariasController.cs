@@ -21,6 +21,8 @@ namespace ConcessionariaWeb.Controllers
         public async Task<ActionResult<IEnumerable<Concessionaria>>>
         GetConcessionarias()
         {
+            
+
             var concessionarias =
                 await _context
                     .Concessionarias
@@ -77,7 +79,7 @@ namespace ConcessionariaWeb.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Administrador, Gerente")]
+        // [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> DeleteConcessionaria(int id)
         {
             try

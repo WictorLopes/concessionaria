@@ -81,10 +81,44 @@
               <button type="submit" class="btn btn-primary w-100">
                 Entrar
               </button>
-              <p class="text-center mt-3">
-                Não tem uma conta? <a href="register.html">Registre-se</a>
-              </p>
             </form>
+
+            <!-- Tabela de Logins -->
+            <div class="mt-4">
+              <h5 class="text-center mb-3">Usuários de Teste</h5>
+              <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>Tipo</th>
+                      <th>E-mail</th>
+                      <th>Senha</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Administrador</td>
+                      <td>adm@teste.com</td>
+                      <td>Teste@123</td>
+                    </tr>
+                    <tr>
+                      <td>Gerente</td>
+                      <td>gerente@teste.com</td>
+                      <td>Teste@123</td>
+                    </tr>
+                    <tr>
+                      <td>Vendedor</td>
+                      <td>vendedor@teste.com</td>
+                      <td>Teste@123</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <p class="text-center mt-3">
+              Não tem uma conta? <a href="register.html">Registre-se</a>
+            </p>
           </div>
         </div>
       </div>
@@ -129,6 +163,18 @@
         errorDiv.style.display = "block";
       }
 
+      // Função para controlar o loading
+      function toggleLoading(show) {
+        const loading = document.getElementById("loading");
+        if (loading) {
+          if (show) {
+            loading.classList.remove("hidden");
+          } else {
+            loading.classList.add("hidden");
+          }
+        }
+      }
+
       // Enviar formulário de login
       document
         .getElementById("formLogin")
@@ -152,6 +198,8 @@
           }
 
           try {
+            toggleLoading(true); 
+
             const resposta = await fetch(`${apiUrlAuth}/login`, {
               method: "POST",
               headers: {
@@ -177,6 +225,8 @@
           } catch (error) {
             console.error("Erro ao fazer login:", error);
             exibirErro("email", "Erro de conexão. Tente novamente mais tarde.");
+          } finally {
+            toggleLoading(false); 
           }
         });
     </script>

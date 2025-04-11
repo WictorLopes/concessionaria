@@ -11,7 +11,6 @@ namespace ConcessionariaWeb.Models
         [Required]
         public int? FabricanteId { get; set; }
         public Fabricante? Fabricante { get; set; }
-        [Required]
         public int? VeiculoId { get; set; }
         public Veiculo? Veiculo { get; set; }
         [Required]

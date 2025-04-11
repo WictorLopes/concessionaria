@@ -142,16 +142,13 @@ namespace ConcessionariaWeb.Controllers
                         .Where(v => v.VeiculoId == id)
                         .ToListAsync();
 
-                // Definir VeiculoId como NULL nas vendas associadas
                 foreach (var venda in vendasAssociadas)
                 {
                     venda.VeiculoId = null;
                 }
 
-                // Salvar as alterações nas vendas
                 await _context.SaveChangesAsync();
 
-                // Agora é seguro excluir o veículo
                 _context.Veiculos.Remove (veiculo);
                 await _context.SaveChangesAsync();
 
@@ -162,8 +159,6 @@ namespace ConcessionariaWeb.Controllers
             }
             catch (Exception ex)
             {
-                // Logar o erro para depuração
-                Console.WriteLine($"Erro ao excluir veículo: {ex.Message}");
                 return StatusCode(500,
                 new { message = "Erro interno ao excluir veículo." });
             }

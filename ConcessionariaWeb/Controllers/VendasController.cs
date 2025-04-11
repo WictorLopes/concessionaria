@@ -71,7 +71,6 @@ namespace ConcessionariaWeb.Controllers
             // Gerar um protocolo único
             venda.Protocolo = Guid.NewGuid().ToString();
 
-            // Não precisamos dos objetos completos, apenas os IDs
             venda.Concessionaria = null;
             venda.Veiculo = null;
             venda.Fabricante = null;

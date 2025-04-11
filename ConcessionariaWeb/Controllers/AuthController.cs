@@ -53,7 +53,7 @@ namespace ConcessionariaWeb.Controllers
             var result = await _userManager.CreateAsync(user, model.Senha);
             if (result.Succeeded)
             {
-                // Atribuir a role ao usuário (já existe devido ao Program.cs)
+                // Atribuir a role ao usuário
                 await _userManager.AddToRoleAsync(user, role);
                 return Ok(new { Message = "Usuário registrado com sucesso!" });
             }

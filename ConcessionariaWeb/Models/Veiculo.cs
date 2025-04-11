@@ -28,7 +28,7 @@ namespace ConcessionariaWeb.Models
         public decimal Preco { get; set; }
 
         [Required]
-        public int FabricanteId { get; set; }
+        public int? FabricanteId { get; set; }
         public Fabricante? Fabricante { get; set; }
 
         [Required]

@@ -6,7 +6,7 @@ namespace ConcessionariaWeb.Models
     {
         public int Id { get; set; }
         [Required]
-        public int ConcessionariaId { get; set; }
+        public int? ConcessionariaId { get; set; }
         public Concessionaria? Concessionaria { get; set; }
         [Required]
         public int? FabricanteId { get; set; }

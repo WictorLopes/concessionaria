@@ -39,26 +39,26 @@ namespace ConcessionariaWeb.Data
             builder
                 .Entity<Venda>()
                 .HasOne(v => v.Veiculo)
-                .WithMany() // Veiculo não tem uma coleção de Vendas (opcional)
+                .WithMany()
                 .HasForeignKey(v => v.VeiculoId)
                 .IsRequired(false)
-                .OnDelete(DeleteBehavior.Restrict); // Impede exclusão em cascata
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Relação: Veiculo -> Fabricante
             builder
                 .Entity<Veiculo>()
                 .HasOne(v => v.Fabricante)
-                .WithMany() // Fabricante não tem uma coleção de Veiculos (opcional)
+                .WithMany()
                 .HasForeignKey(v => v.FabricanteId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
-            // Relação: Venda -> Concessionaria (opcional, mas recomendada)
+            // Relação: Venda -> Concessionaria
             builder
                 .Entity<Venda>()
                 .HasOne(v => v.Concessionaria)
-                .WithMany() // Concessionaria não tem uma coleção de Vendas (opcional)
+                .WithMany()
                 .HasForeignKey(v => v.ConcessionariaId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

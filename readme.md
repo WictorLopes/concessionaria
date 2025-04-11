@@ -4,12 +4,12 @@ Aplicação web para gerenciamento de vendas de veículos em concessionárias. P
 
 ## Tecnologias Utilizadas
 
-### Frontend:
+### Frontend(rodando pelo Render(https://render.com/):
 - HTML5
 - JavaScript (vanilla)
 - Bootstrap
 
-### Backend:
+### Backend(rodando pela Azure(azure.microsoft.com):
 - ASP.NET
 - Entity Framework Core (SQL Server)
 - Identity para autenticação com JWT

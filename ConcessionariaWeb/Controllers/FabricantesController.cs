@@ -21,7 +21,13 @@ namespace ConcessionariaWeb.Controllers
         public async Task<ActionResult<IEnumerable<Fabricante>>>
         GetFabricantes()
         {
-            return await _context.Fabricantes.ToListAsync();
+            var fabricantes =
+                await _context
+                    .Fabricantes
+                    .Where(f => !f.Excluido)
+                    .ToListAsync();
+
+            return Ok(fabricantes);
         }
 
         [HttpGet("{id}")]
@@ -105,14 +111,15 @@ namespace ConcessionariaWeb.Controllers
                     });
                 }
 
-                // Buscar todos os veículos associados a este fabricante
+                fabricante.Excluido = true; // Marca como excluído
+
+                // Também marca todos os veículos do fabricante como excluídos
                 var veiculosDoFabricante =
                     await _context
                         .Veiculos
                         .Where(v => v.FabricanteId == id)
                         .ToListAsync();
 
-                // Marcar todos como excluídos
                 foreach (var veiculo in veiculosDoFabricante)
                 {
                     veiculo.Excluido = true;
@@ -122,7 +129,7 @@ namespace ConcessionariaWeb.Controllers
 
                 return Ok(new {
                     message =
-                        "Fabricante excluído. Veículos do fabricante marcados como excluídos."
+                        "Fabricante e seus veículos marcados como excluídos com sucesso."
                 });
             }
             catch (Exception)

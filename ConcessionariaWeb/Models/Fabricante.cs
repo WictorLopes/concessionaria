@@ -18,5 +18,7 @@ namespace ConcessionariaWeb.Models
 
         [Url]
         public required string Website { get; set; }
+
+        public bool Excluido { get; set; } = false;
     }
 }

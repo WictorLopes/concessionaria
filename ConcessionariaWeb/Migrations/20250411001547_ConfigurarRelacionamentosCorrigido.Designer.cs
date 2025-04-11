@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ConcessionariaWeb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250411000626_ConfigurarOnDeleteSetNull")]
-    partial class ConfigurarOnDeleteSetNull
+    [Migration("20250411001547_ConfigurarRelacionamentosCorrigido")]
+    partial class ConfigurarRelacionamentosCorrigido
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -197,8 +197,7 @@ namespace ConcessionariaWeb.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int?>("FabricanteId")
-                        .IsRequired()
+                    b.Property<int>("FabricanteId")
                         .HasColumnType("int");
 
                     b.Property<string>("Modelo")
@@ -418,7 +417,7 @@ namespace ConcessionariaWeb.Migrations
                     b.HasOne("ConcessionariaWeb.Models.Fabricante", "Fabricante")
                         .WithMany()
                         .HasForeignKey("FabricanteId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Fabricante");
@@ -429,7 +428,7 @@ namespace ConcessionariaWeb.Migrations
                     b.HasOne("ConcessionariaWeb.Models.Concessionaria", "Concessionaria")
                         .WithMany()
                         .HasForeignKey("ConcessionariaId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("ConcessionariaWeb.Models.Fabricante", "Fabricante")

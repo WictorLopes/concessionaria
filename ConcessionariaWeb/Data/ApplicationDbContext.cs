@@ -42,7 +42,7 @@ namespace ConcessionariaWeb.Data
                 .WithMany()
                 .HasForeignKey(v => v.VeiculoId)
                 .IsRequired(false)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.SetNull); // Impede exclusão em cascata
 
             // Relação: Veiculo -> Fabricante
             builder
@@ -50,7 +50,7 @@ namespace ConcessionariaWeb.Data
                 .HasOne(v => v.Fabricante)
                 .WithMany()
                 .HasForeignKey(v => v.FabricanteId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Relação: Venda -> Concessionaria
             builder
@@ -58,7 +58,7 @@ namespace ConcessionariaWeb.Data
                 .HasOne(v => v.Concessionaria)
                 .WithMany()
                 .HasForeignKey(v => v.ConcessionariaId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

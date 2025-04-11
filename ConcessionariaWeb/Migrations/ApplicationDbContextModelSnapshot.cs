@@ -194,8 +194,7 @@ namespace ConcessionariaWeb.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int?>("FabricanteId")
-                        .IsRequired()
+                    b.Property<int>("FabricanteId")
                         .HasColumnType("int");
 
                     b.Property<string>("Modelo")
@@ -415,7 +414,7 @@ namespace ConcessionariaWeb.Migrations
                     b.HasOne("ConcessionariaWeb.Models.Fabricante", "Fabricante")
                         .WithMany()
                         .HasForeignKey("FabricanteId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Fabricante");
@@ -426,7 +425,7 @@ namespace ConcessionariaWeb.Migrations
                     b.HasOne("ConcessionariaWeb.Models.Concessionaria", "Concessionaria")
                         .WithMany()
                         .HasForeignKey("ConcessionariaId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("ConcessionariaWeb.Models.Fabricante", "Fabricante")

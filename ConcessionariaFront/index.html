@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
@@ -14,6 +15,8 @@
     />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
   </head>
   <body>
     <!-- Navbar -->
@@ -50,12 +53,12 @@
             <li class="nav-item">
               <a class="nav-link" href="veiculo/listar.html">Veículos</a>
             </li>
-            <div id="listar-usuarios-container2" style="display: flex;">
+            <div id="listar-usuarios-container2" style="display: none;">
               <li class="nav-item">
-                <a class="nav-link" href="../usuario/listar.html">Usuários</a>
+                <a class="nav-link" href="usuario/listar.html">Usuários</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="../relatorios/listar.html">Relatórios</a>
+                <a class="nav-link" href="relatorios/listar.html">Relatórios</a>
               </li>
             </div>
           </ul>
@@ -72,6 +75,7 @@
         id="mensagem-boas-vindas"
         class="text-center mb-4 alert alert-info"
         role="alert"
+        style="display: none;"
       >
       </div>
 
@@ -112,7 +116,7 @@
         <div
           id="listar-usuarios-container"
           class="col-md-4 mb-4"
-          style="display: none"
+          style="display: none;"
         >
           <div class="card p-3">
             <a href="usuario/listar.html" class="btn btn-info btn-lg w-100"
@@ -123,7 +127,7 @@
         <div
           id="relatorios-container"
           class="col-md-4 mb-4"
-          style="display: none"
+          style="display: none;"
         >
           <div class="card p-3">
             <a
@@ -142,17 +146,16 @@
 
     <!-- Footer -->
     <footer class="text-center">
-      <p>© 2025 Concessionária Web. Todos os direitos reservados.</p>
+      <p>© 2025 Concessionária Web. Todos os direitos reservados. Backend Offline, site funcionando apenas o visual.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/auth.js"></script>
     <script>
       // Aguarda o DOM estar totalmente carregado
       document.addEventListener("DOMContentLoaded", function () {
         // Verificar autenticação ao carregar a página
-        const token = verificarAutenticacao();
-        if (!token) {
+        const user = verificarAutenticacao();
+        if (!user) {
           return;
         }
 
@@ -160,55 +163,36 @@
         const nome = localStorage.getItem("nome");
         const tipo = localStorage.getItem("tipo");
 
-        const mensagemBoasVindas = document.getElementById(
-          "mensagem-boas-vindas"
-        );
+        const mensagemBoasVindas = document.getElementById("mensagem-boas-vindas");
         if (nome && tipo) {
           const mensagem = `Bem-vindo(a) ${nome}, você é um(a) ${tipo}!`;
           mensagemBoasVindas.textContent = mensagem;
           mensagemBoasVindas.style.display = "block";
         } else {
-          mensagemBoasVindas.textContent =
-            "Bem-vindo(a)! Dados do usuário não encontrados.";
+          mensagemBoasVindas.textContent = "Bem-vindo(a)! Dados do usuário não encontrados.";
           mensagemBoasVindas.classList.remove("alert-info");
           mensagemBoasVindas.classList.add("alert-warning");
+          mensagemBoasVindas.style.display = "block";
         }
 
         // Mostrar botão "Gerenciar Usuários" para Administrador e Gerente
-        const listarContainer = document.getElementById(
-          "listar-usuarios-container"
-        );
+        const listarContainer = document.getElementById("listar-usuarios-container");
+        const listarContainer2 = document.getElementById("listar-usuarios-container2");
+        const relatoriosContainer = document.getElementById("relatorios-container");
         if (tipo === "Administrador" || tipo === "Gerente") {
           listarContainer.style.display = "block";
-        } else {
-          listarContainer.style.display = "none";
-        }
-
-        const listarContainer2 = document.getElementById(
-          "listar-usuarios-container2"
-        );
-        if (tipo === "Administrador" || tipo === "Gerente") {
           listarContainer2.style.display = "flex";
-        } else {
-          listarContainer2.style.display = "none";
-        }
-
-        // Mostrar botão "Relatórios" para Administrador e Gerente
-        const relatoriosContainer = document.getElementById(
-          "relatorios-container"
-        );
-        if (tipo === "Administrador" || tipo === "Gerente") {
           relatoriosContainer.style.display = "block";
         } else {
+          listarContainer.style.display = "none";
+          listarContainer2.style.display = "none";
           relatoriosContainer.style.display = "none";
         }
 
+        // Configurar o botão de logout
         const logoutButton = document.getElementById("logout");
         if (logoutButton) {
-          logoutButton.addEventListener("click", function () {
-            localStorage.clear();
-            window.location.href = "login.html";
-          });
+          logoutButton.addEventListener("click", logout);
         } else {
           console.error("Elemento #logout não encontrado no DOM");
         }

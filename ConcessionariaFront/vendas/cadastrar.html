@@ -1,3 +1,4 @@
+<!-- vendas/cadastrar.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
@@ -14,6 +15,9 @@
     />
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="vendas.js"></script>
   </head>
   <body>
     <div id="loading" class="loading-overlay hidden">
@@ -36,32 +40,26 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <a class="nav-link active" href="../index.html">Dashboard</a>
+              <a class="nav-link" href="../index.html">Dashboard</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="../vendas/listar.html">Vendas</a>
+              <a class="nav-link active" href="../vendas/listar.html">Vendas</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="../concessionaria/listar.html"
-                >Concessionárias</a
-              >
+              <a class="nav-link" href="../concessionaria/listar.html">Concessionárias</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="../fabricante/listar.html"
-                >Fabricantes</a
-              >
+              <a class="nav-link" href="../fabricante/listar.html">Fabricantes</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="../veiculo/listar.html">Veículos</a>
             </li>
-            <div id="listar-usuarios-container" style="display: flex">
+            <div id="listar-usuarios-container" style="display: none;">
               <li class="nav-item">
                 <a class="nav-link" href="../usuario/listar.html">Usuários</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="../relatorios/listar.html"
-                  >Relatórios</a
-                >
+                <a class="nav-link" href="../relatorios/listar.html">Relatórios</a>
               </li>
             </div>
           </ul>
@@ -74,26 +72,22 @@
         <div class="col-md-8">
           <div class="card-no-hover p-4">
             <h2 class="text-center mb-4">Cadastrar Venda</h2>
-            <div
-              id="geralError"
-              style="display: none; color: red"
-              class="mb-3"
-            ></div>
+            <div id="geralError" class="text-center mb-3" style="display: none;"></div>
             <form id="formCadastroVenda">
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label for="concessionaria" class="form-label"
-                    >Concessionária</label
-                  >
+                  <label for="concessionaria" class="form-label">Concessionária</label>
                   <select class="form-select" id="concessionaria" required>
                     <option value="">Selecione uma concessionária</option>
                   </select>
+                  <div id="concessionariaError" class="error-message"></div>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label for="fabricante" class="form-label">Fabricante</label>
                   <select class="form-select" id="fabricante" required>
                     <option value="">Selecione um fabricante</option>
                   </select>
+                  <div id="fabricanteError" class="error-message"></div>
                 </div>
               </div>
               <div class="row">
@@ -102,72 +96,36 @@
                   <select class="form-select" id="veiculo" required disabled>
                     <option value="">Selecione um veículo</option>
                   </select>
+                  <div id="veiculoError" class="error-message"></div>
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label for="nomeCliente" class="form-label"
-                    >Nome do Cliente</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="nomeCliente"
-                    required
-                  />
+                  <label for="nomeCliente" class="form-label">Nome do Cliente</label>
+                  <input type="text" class="form-control" id="nomeCliente" required />
+                  <div id="nomeClienteError" class="error-message"></div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label for="cpf" class="form-label">CPF</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="cpf"
-                    placeholder="000.000.000-00"
-                    required
-                  />
-                  <div id="cpfError" style="display: none; color: red"></div>
+                  <input type="text" class="form-control" id="cpf" placeholder="000.000.000-00" maxlength="14" required />
+                  <div id="cpfError" class="error-message"></div>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label for="telefone" class="form-label">Telefone</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="telefone"
-                    placeholder="(00) 00000-0000"
-                    required
-                  />
+                  <input type="text" class="form-control" id="telefone" placeholder="(00) 00000-0000" maxlength="15" required />
+                  <div id="telefoneError" class="error-message"></div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label for="dataVenda" class="form-label"
-                    >Data da Venda</label
-                  >
-                  <input
-                    type="date"
-                    class="form-control"
-                    id="dataVenda"
-                    required
-                  />
-                  <div
-                    id="dataVendaError"
-                    style="display: none; color: red"
-                  ></div>
+                  <label for="dataVenda" class="form-label">Data da Venda</label>
+                  <input type="date" class="form-control" id="dataVenda" required />
+                  <div id="dataVendaError" class="error-message"></div>
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label for="precoVenda" class="form-label"
-                    >Preço de Venda</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="precoVenda"
-                    required
-                  />
-                  <div
-                    id="precoVendaError"
-                    style="display: none; color: red"
-                  ></div>
+                  <label for="precoVenda" class="form-label">Preço de Venda</label>
+                  <input type="text" class="form-control" id="precoVenda" required />
+                  <div id="precoVendaError" class="error-message"></div>
                 </div>
               </div>
               <div class="d-flex justify-content-between">
@@ -181,27 +139,38 @@
     </main>
 
     <footer class="text-center">
-      <p>© 2025 Concessionária Web. Todos os direitos reservados.</p>
+      <p>© 2025 Concessionária Web. Todos os direitos reservados. Backend Offline, site funcionando apenas o visual.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="vendas.js"></script>
     <script>
-      const precoVendaInput = document.getElementById("precoVenda");
-
-      precoVendaInput.addEventListener("input", function (e) {
-        let value = e.target.value;
-        value = value.replace(/[^0-9,]/g, "");
-        let parts = value.split(",");
-        let integerPart = parts[0].replace(/\D/g, "");
-        let decimalPart = parts[1] ? parts[1].slice(0, 2) : "";
-        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        if (decimalPart) {
-          e.target.value = `${integerPart},${decimalPart.padEnd(2, "0")}`;
-        } else {
-          e.target.value = integerPart;
+      // Verificar autenticação e permissões
+      document.addEventListener("DOMContentLoaded", function () {
+        const user = verificarAutenticacao();
+        if (!user) {
+          return;
         }
+
+        const tipo = localStorage.getItem("tipo");
+        const listarContainer = document.getElementById("listar-usuarios-container");
+        if (tipo === "Administrador" || tipo === "Gerente") {
+          listarContainer.style.display = "flex";
+        } else {
+          listarContainer.style.display = "none";
+        }
+
+        // Máscara para preço de venda
+        const precoVendaInput = document.getElementById("precoVenda");
+        precoVendaInput.addEventListener("input", function () {
+          let value = this.value.replace(/\D/g, "");
+          if (value.length === 0) {
+            this.value = "";
+            return;
+          }
+          value = (parseInt(value) / 100).toFixed(2).replace(".", ",");
+          value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+          this.value = value;
+        });
       });
     </script>
   </body>

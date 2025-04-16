@@ -1,16 +1,8 @@
-const apiUrlConcessionaria =
-  "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/concessionarias";
-const apiUrlFabricante =
-  "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/fabricantes";
-const apiUrlVeiculo =
-  "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/veiculos";
-const apiUrlVenda =
-  "https://concessionaria-back-g0fhh0a4czachmba.brazilsouth-01.azurewebsites.net/api/venda";
-
 document.addEventListener("DOMContentLoaded", function () {
   const formCadastroVenda = document.getElementById("formCadastroVenda");
   const tabelaVendas = document.getElementById("tabelaVendas");
 
+  // Função para controlar o loading
   function toggleLoading(show) {
     const loading = document.getElementById("loading");
     if (loading) {
@@ -22,16 +14,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Função para formatar CPF
   function formatarCPF(cpf) {
     const value = cpf.replace(/\D/g, "");
     return value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
   }
 
+  // Função para formatar telefone
   function formatarTelefone(telefone) {
     const value = telefone.replace(/\D/g, "");
     return value.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
   }
 
+  // Função para exibir mensagem de erro
   function exibirErro(campo, mensagem) {
     const errorDiv = document.getElementById(`${campo}Error`);
     if (errorDiv) {
@@ -40,10 +35,48 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Função para limpar mensagens de erro
+  function limparErros() {
+    const campos = [
+      "concessionaria",
+      "fabricante",
+      "veiculo",
+      "nomeCliente",
+      "cpf",
+      "telefone",
+      "dataVenda",
+      "precoVenda",
+      "geral",
+    ];
+    campos.forEach((campo) => {
+      const errorDiv = document.getElementById(`${campo}Error`);
+      if (errorDiv) {
+        errorDiv.textContent = "";
+        errorDiv.style.display = "none";
+      }
+    });
+  }
+
+  // Função para desformatar preço
   function desformatarPreco(valor) {
     return parseFloat(valor.replace(/\./g, "").replace(",", "."));
   }
 
+  // Função para formatar preço
+  function formatarPreco(valor) {
+    return valor.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  }
+
+  // Função para gerar um protocolo simples
+  function gerarProtocolo() {
+    const timestamp = Date.now();
+    return `VENDA-${timestamp}`;
+  }
+
+  // Cadastrar nova venda
   if (formCadastroVenda) {
     const concessionariaSelect = document.getElementById("concessionaria");
     const fabricanteSelect = document.getElementById("fabricante");
@@ -51,6 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const cpfInput = document.getElementById("cpf");
     const telefoneInput = document.getElementById("telefone");
 
+    // Máscaras para CPF e telefone
     cpfInput.addEventListener("input", function () {
       let value = this.value.replace(/\D/g, "");
       if (value.length > 11) value = value.slice(0, 11);
@@ -68,14 +102,11 @@ document.addEventListener("DOMContentLoaded", function () {
       this.value = value;
     });
 
-    async function carregarConcessionarias() {
+    // Carregar concessionárias
+    function carregarConcessionarias() {
       try {
-        toggleLoading(true);
-        const resposta = await fetch(apiUrlConcessionaria, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        if (!resposta.ok) throw new Error("Erro ao carregar concessionárias");
-        const concessionarias = await resposta.json();
+        const data = getData();
+        const concessionarias = data.concessionarias;
         concessionarias.forEach((concessionaria) => {
           const option = document.createElement("option");
           option.value = concessionaria.id;
@@ -85,19 +116,14 @@ document.addEventListener("DOMContentLoaded", function () {
       } catch (error) {
         console.error("Erro ao carregar concessionárias:", error);
         exibirErro("geral", "Erro ao carregar concessionárias.");
-      } finally {
-        toggleLoading(false);
       }
     }
 
-    async function carregarFabricantes() {
+    // Carregar fabricantes
+    function carregarFabricantes() {
       try {
-        toggleLoading(true);
-        const resposta = await fetch(apiUrlFabricante, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        if (!resposta.ok) throw new Error("Erro ao carregar fabricantes");
-        const fabricantes = await resposta.json();
+        const data = getData();
+        const fabricantes = data.fabricantes;
         fabricantes.forEach((fabricante) => {
           const option = document.createElement("option");
           option.value = fabricante.id;
@@ -107,12 +133,11 @@ document.addEventListener("DOMContentLoaded", function () {
       } catch (error) {
         console.error("Erro ao carregar fabricantes:", error);
         exibirErro("geral", "Erro ao carregar fabricantes.");
-      } finally {
-        toggleLoading(false);
       }
     }
 
-    fabricanteSelect.addEventListener("change", async function () {
+    // Carregar veículos por fabricante
+    fabricanteSelect.addEventListener("change", function () {
       const fabricanteId = parseInt(this.value);
       veiculoSelect.disabled = true;
       veiculoSelect.innerHTML =
@@ -120,21 +145,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (fabricanteId) {
         try {
-          toggleLoading(true);
-          const resposta = await fetch(
-            `${apiUrlVeiculo}/por-fabricante/${fabricanteId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-            }
+          const data = getData();
+          const veiculos = data.veiculos.filter(
+            (veiculo) => veiculo.fabricanteId === fabricanteId
           );
-          if (!resposta.ok) throw new Error("Erro ao carregar veículos");
-          const veiculos = await resposta.json();
           veiculos.forEach((veiculo) => {
             const option = document.createElement("option");
             option.value = veiculo.id;
-            option.textContent = `${veiculo.modelo} - ${formatarPreco(veiculo.preco)}`;
+            option.textContent = `${veiculo.modelo} - ${formatarPreco(
+              veiculo.preco
+            )}`;
             option.dataset.preco = veiculo.preco;
             veiculoSelect.appendChild(option);
           });
@@ -142,14 +162,16 @@ document.addEventListener("DOMContentLoaded", function () {
         } catch (error) {
           console.error("Erro ao carregar veículos:", error);
           exibirErro("geral", "Erro ao carregar veículos.");
-        } finally {
-          toggleLoading(false);
         }
       }
     });
 
-    formCadastroVenda.addEventListener("submit", async function (e) {
+    // Submissão do formulário de cadastro de venda
+    formCadastroVenda.addEventListener("submit", function (e) {
       e.preventDefault();
+
+      // Limpar mensagens de erro
+      limparErros();
 
       const concessionariaId = parseInt(concessionariaSelect.value);
       const fabricanteId = parseInt(fabricanteSelect.value);
@@ -166,8 +188,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const hoje = new Date().toISOString().split("T")[0];
 
+      // Validações
+      if (!concessionariaId) {
+        exibirErro("concessionaria", "Selecione uma concessionária!");
+        return;
+      }
+      if (!fabricanteId) {
+        exibirErro("fabricante", "Selecione um fabricante!");
+        return;
+      }
+      if (!veiculoId) {
+        exibirErro("veiculo", "Selecione um veículo!");
+        return;
+      }
+      if (!nomeCliente) {
+        exibirErro("nomeCliente", "Informe o nome do cliente!");
+        return;
+      }
       if (!validarCPF(cpf)) {
         exibirErro("cpf", "CPF inválido!");
+        return;
+      }
+      if (telefone.length < 10 || telefone.length > 11) {
+        exibirErro("telefone", "Telefone inválido!");
+        return;
+      }
+      if (!dataVenda) {
+        exibirErro("dataVenda", "Informe a data da venda!");
         return;
       }
       if (dataVenda > hoje) {
@@ -189,47 +236,49 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      const novaVenda = {
-        concessionariaId,
-        veiculoId,
-        fabricanteId,
-        nomeCliente,
-        cpf,
-        telefone,
-        dataVenda,
-        precoVenda,
-        protocolo: "",
-      };
-
       try {
         toggleLoading(true);
-        const resposta = await fetch(apiUrlVenda, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify(novaVenda),
-        });
+        const data = getData();
 
-        if (resposta.ok) {
-          const result = await resposta.json();
-          const mensagemExibida = exibirErro(
-            "geral",
-            `Venda cadastrada com sucesso! Protocolo: ${result.protocolo}`
-          );
-          setTimeout(
-            () => {
-              window.location.href = "listar.html";
-            },
-            mensagemExibida ? 1500 : 0
-          );
-        } else if (resposta.status === 409) {
+        // Verificar se o CPF já está registrado
+        if (data.vendas.some((venda) => venda.cpf === cpf)) {
           exibirErro("cpf", "CPF já registrado para outra venda!");
-        } else {
-          const erro = await resposta.text();
-          throw new Error(`Erro na API: ${resposta.status} - ${erro}`);
+          return;
         }
+
+        // Criar nova venda
+        const novaVenda = {
+          id: generateUUID(), // Usando a função do auth.js
+          concessionariaId,
+          veiculoId,
+          fabricanteId,
+          nomeCliente,
+          cpf,
+          telefone,
+          dataVenda,
+          precoVenda,
+          protocolo: gerarProtocolo(),
+          concessionariaNome: data.concessionarias.find(
+            (c) => c.id === concessionariaId
+          ).nome,
+          fabricanteNome: data.fabricantes.find((f) => f.id === fabricanteId)
+            .nome,
+          veiculoModelo: data.veiculos.find((v) => v.id === veiculoId).modelo,
+        };
+
+        // Adicionar venda ao localStorage
+        data.vendas.push(novaVenda);
+        saveData(data);
+
+        // Exibir mensagem de sucesso
+        exibirErro(
+          "geral",
+          `Venda cadastrada com sucesso! Protocolo: ${novaVenda.protocolo}`,
+          "text-success"
+        );
+        setTimeout(() => {
+          window.location.href = "listar.html";
+        }, 1500);
       } catch (error) {
         console.error("Erro ao cadastrar venda:", error);
         exibirErro("geral", "Erro ao cadastrar venda: " + error.message);
@@ -238,40 +287,69 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
+    // Carregar dados iniciais
     carregarConcessionarias();
     carregarFabricantes();
   }
 
-  function formatarPreco(valor) {
-    return valor.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  }
-
+  // Listar vendas
   if (tabelaVendas) {
-    async function carregarVendas() {
+    function carregarVendas() {
       try {
         toggleLoading(true);
-        const resposta = await fetch(apiUrlVenda, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        const data = getData();
+        const vendas = data.vendas;
+
+        // Corrigir vendas antigas que não têm os nomes
+        vendas.forEach((venda) => {
+          if (
+            !venda.concessionariaNome ||
+            !venda.fabricanteNome ||
+            !venda.veiculoModelo
+          ) {
+            const concessionaria = data.concessionarias.find(
+              (c) => c.id === venda.concessionariaId
+            );
+            const fabricante = data.fabricantes.find(
+              (f) => f.id === venda.fabricanteId
+            );
+            const veiculo = data.veiculos.find((v) => v.id === venda.veiculoId);
+
+            venda.concessionariaNome = concessionaria
+              ? concessionaria.nome
+              : "Desconhecida";
+            venda.fabricanteNome = fabricante
+              ? fabricante.nome
+              : "Desconhecido";
+            venda.veiculoModelo = veiculo ? veiculo.modelo : "Desconhecido";
+          }
         });
-        if (!resposta.ok) throw new Error("Erro ao carregar vendas");
-        const vendas = await resposta.json();
+
+        // Salvar dados corrigidos
+        saveData(data);
+
+        if (vendas.length === 0) {
+          tabelaVendas.innerHTML = `
+            <tr>
+              <td colspan="9" class="text-center">Nenhuma venda cadastrada.</td>
+            </tr>
+          `;
+          return;
+        }
 
         vendas.forEach((venda) => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-                        <td>${venda.concessionariaNome}</td>
-                        <td>${venda.fabricanteNome}</td>
-                        <td>${venda.veiculoModelo}</td>
-                        <td>${venda.nomeCliente}</td>
-                        <td>${formatarCPF(venda.cpf)}</td>
-                        <td>${formatarTelefone(venda.telefone)}</td>
-                        <td>${venda.dataVenda}</td>
-                        <td>${formatarPreco(venda.precoVenda)}</td>
-                        <td>${venda.protocolo}</td>
-                    `;
+            <td>${venda.concessionariaNome}</td>
+            <td>${venda.fabricanteNome}</td>
+            <td>${venda.veiculoModelo}</td>
+            <td>${venda.nomeCliente}</td>
+            <td>${formatarCPF(venda.cpf)}</td>
+            <td>${formatarTelefone(venda.telefone)}</td>
+            <td>${venda.dataVenda}</td>
+            <td>${formatarPreco(venda.precoVenda)}</td>
+            <td>${venda.protocolo}</td>
+          `;
           tabelaVendas.appendChild(tr);
         });
       } catch (error) {
@@ -286,6 +364,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+// Função para validar CPF
 function validarCPF(cpf) {
   cpf = cpf.replace(/\D/g, "");
   if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
